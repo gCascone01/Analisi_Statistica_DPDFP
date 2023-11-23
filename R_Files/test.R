@@ -1,88 +1,48 @@
 install.packages('xlsx')
 library(xlsx)
 
-#Ottengo i dati dal foglio excel con i dati assoluti e li inserisco in una matrice.
-mydata <- read.xlsx('C:/Users/user/Desktop/Magistrale/Statistica e Analisi dei Dati/Progetto/Datasets/Both/All_Both.xlsx', 1)
+# CARICO IL DATASET COMPLETO
+
+mydata = read.xlsx('C:/Users/user/Desktop/Magistrale/Statistica e Analisi dei Dati/SAD_Project/Datasets/Complete_Dataset.xlsx', 1)
 data = as.matrix(mydata)
 
-#Dalla matrice, definisco due vettori: uno per i nomi dei paesi, uno per gli anni.
-countries = data[-1,1]
-years = data[1,-1]
+# CREO LE DUE MATRICI
 
-#Creo la versione finale della matrice con i valori assoluti, assegnando i nomi a righe e colonne.
-dataset = matrix(data[-1,-1],nrow=54)
-tmp = strtoi(dataset)
-dataset = matrix( tmp , nrow=54)
+dataset = matrix(data[,-1],nrow=26) # nrow = 27 quando aggiungiamo Cipro
+dataset = matrix( as.double(dataset) , nrow=26) # idem
+
+countries = c("Austria", "Belgio", "Bulgaria", "Croazia", "Danimarca", "Estonia", "Finlandia", "Francia", "Germania",
+              "Grecia", "Ungheria", "Irlanda", "Italia", "Lettonia", "Lituania", "Lussemburgo", "Malta", "Paesi Bassi", "Polonia",
+              "Portogallo", "Repubblica Ceca", "Romania", "Slovacchia", "Slovenia", "Spagna", "Svezia")
 rownames(dataset) = countries
-colnames(dataset) = years
 
-#DEFINISCO POI DUE TABELLE, UNA PER I MINIMI E UNA PER I MASSIMI
+D_Index = seq(1,60, by=2) # DEFINISCO GLI INDICI DELLE COLONNE PER OGNI VARIABILE
+V_Index = seq(2,60, by=2) # D sta per Death, V per Value
 
-#TROVO I MINIMI
-min = min( dataset )
-positions = which( dataset == min )
+D_dataset = dataset[, D_Index]
+V_dataset = dataset[, V_Index]
 
-#QUINDI TROVO GLI INDICI DEI MINIMI INDIVIDUATI
-rows_index = positions %% length(countries)
-cols_index = round( (positions) / length(countries) )
+years = seq(1990,2019)
+colnames(D_dataset) = years
+colnames(V_dataset) = years
 
-#CREO LA TABELLA DEI MINIMI
-min_matrix = cbind(dataset[positions], countries[rows_index], years[cols_index])
-colnames(min_matrix) = c( "VALUE", "COUNTRY", "YEAR")
-rownames(min_matrix) = 1:length(positions)
-min_matrix
+# CALCOLO MINIMO, MASSIMO E CAMPO DI VARIAZIONE PER LE DUE VARIABILI
 
-#FACCIO LO STESSO PER I MASSIMI
-max = max( dataset )
-positions = which( dataset == max )
+D_min = min(D_dataset)
+V_min = min(V_dataset)
 
-rows_index = positions %% length(countries)
-cols_index = round( (positions) / length(countries) )
+D_max = max(D_dataset)
+V_max = max(V_dataset)
 
-max_matrix = cbind(dataset[positions], countries[rows_index], years[cols_index])
-colnames(max_matrix) = c( "VALUE", "COUNTRY", "YEAR")
-rownames(max_matrix) = 1:length(positions)
-max_matrix
+D_cdv = D_max - D_min
+V_cdv = V_max - V_min
 
-#CALCOLO IL CAMPO DI VARIAZIONE
-campo_di_variazione = max - min
-campo_di_variazione
+resume = rbind(c(D_min,D_max,D_cdv),c(V_min,V_max,V_cdv))
+colnames(resume) = c("MIN", "MAX", "CdV")
+rownames(resume) = c("DPM","VSL")
+View(resume)
 
-#IL DATASET RISULTA ESSERE POCO IDONEO. OPERIAMO SUL DATASET CHE TIENE CONTO DELLA DENSITA'
-
-mydata = read.xlsx('C:/Users/user/Desktop/Magistrale/Statistica e Analisi dei Dati/Progetto/Datasets/Density/All_Both_Density.xlsx', 1)
-data = as.matrix(mydata)
-
-dataset = matrix(data[-1,-1],nrow=54)
-tmp = as.double(dataset)
-dataset = matrix( tmp , nrow=54)
-rownames(dataset) = countries
-colnames(dataset) = years
-
-min = min( dataset )
-positions = which( dataset == min )
-
-rows_index = positions %% length(countries)
-cols_index = round( (positions) / length(countries) )
-
-min_matrix = cbind(dataset[positions], countries[rows_index], years[cols_index])
-colnames(min_matrix) = c( "VALUE", "COUNTRY", "YEAR")
-rownames(min_matrix) = 1:length(positions)
-min_matrix
-
-max = max( dataset )
-positions = which( dataset == max )
-
-rows_index = positions %% length(countries)
-cols_index = round( (positions) / length(countries) )
-
-max_matrix = cbind(dataset[positions], countries[rows_index], years[cols_index])
-colnames(max_matrix) = c( "VALUE", "COUNTRY", "YEAR")
-rownames(max_matrix) = 1:length(positions)
-max_matrix
-
-campo_di_variazione = max - min
-campo_di_variazione
+# DA QUI IN POI NON E' AGGIORNATO!!!
 
 #CALCOLO ALCUNE MEDIE
 
@@ -116,3 +76,4 @@ points(rep(1, length(outliers)), outliers, col = "red", pch = 19)
 
 #
 View(dataset)
+max
