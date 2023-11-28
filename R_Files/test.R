@@ -42,38 +42,70 @@ colnames(resume) = c("MIN", "MAX", "CdV")
 rownames(resume) = c("DPM","VSL")
 View(resume)
 
-# DA QUI IN POI NON E' AGGIORNATO!!!
+# DEFINISCO LE CLASSI
+labels_classi = c("Very Low", "Low", "Medium", "High", "Very High")
+classi_D = c(D_min-1, 167.8986, 276.0472, 348.1958, 492.3444, D_max+1)
+classi_V = c(V_min-1, 2.5008, 4.1486, 5.7946, 7.4442, V_max+1)
 
-#CALCOLO ALCUNE MEDIE
 
-#MEDIA ARITMETICA
-avg = mean(dataset)
-avg
+# DEFINISCO LA DIVISIONE IN CLASSI PER I 5 INTERVALLI TEMPORALI (Variabile DPM)
 
-#MEDIA ARITMETICA CON TRIM=0.05
-avg = mean(dataset,0.05)
-avg
+#devo modificare in ogni cut right=false
 
-#MEDIA ANNUALE
-avg_per_year = apply(dataset, 2, function(x) mean(x))
-avg_per_year_matrix = cbind(avg_per_year)
-colnames(avg_per_year_matrix) = c( "AVERAGE")
-rownames(avg_per_year_matrix) = years
-plot(avg_per_year_matrix, type='o', xlab='Anno', ylab='DPCFP', main="Media annuale dei DPCFP",
-     bty='l', col='red', xaxt = "n")
-axis(1, at = seq(1,30,by=5), labels = seq(1990,2019,by=5), las = 2)
+intervallo = cbind(D_dataset[,1:6])
+avg_intervallo = apply(intervallo, 1, mean)
+classi_D_1995 = cut(avg_intervallo, breaks=classi_D, labels=labels_classi)
 
-#QUANTILI
-quantili=quantile(dataset)
-quantili_matrix = cbind(quantili)
-colnames(quantili_matrix) = c( "QUANTILE")
-View(quantili_matrix)
+intervallo = cbind(D_dataset[,7:12])
+avg_intervallo = apply(intervallo, 1, mean)
+classi_D_2001 = cut(avg_intervallo, breaks=classi_D, labels=labels_classi)
 
-boxplot=boxplot(as.vector(dataset), col="green", outlier.color="red")
-outliers=boxplot$out
-outliers
-points(rep(1, length(outliers)), outliers, col = "red", pch = 19)   
+intervallo = cbind(D_dataset[,13:18])
+avg_intervallo = apply(intervallo, 1, mean)
+classi_D_2007 = cut(avg_intervallo, breaks=classi_D, labels=labels_classi)
 
-#
-View(dataset)
-max
+intervallo = cbind(D_dataset[,19:24])
+avg_intervallo = apply(intervallo, 1, mean)
+classi_D_2013 = cut(avg_intervallo, breaks=classi_D, labels=labels_classi)
+
+intervallo = cbind(D_dataset[,25:30])
+avg_intervallo = apply(intervallo, 1, mean)
+classi_D_2019 = cut(avg_intervallo, breaks=classi_D, labels=labels_classi)
+
+
+
+# DEFINISCO LA DIVISIONE IN CLASSI PER I 5 INTERVALLI TEMPORALI (Variabile VSL)
+
+intervallo = cbind(V_dataset[,1:6])
+avg_intervallo = apply(intervallo, 1, mean)
+classi_V_1995 = cut(avg_intervallo, breaks=classi_V, labels=labels_classi)
+
+intervallo = cbind(V_dataset[,7:12])
+avg_intervallo = apply(intervallo, 1, mean)
+classi_V_2001 = cut(avg_intervallo, breaks=classi_V, labels=labels_classi)
+
+intervallo = cbind(V_dataset[,13:18])
+avg_intervallo = apply(intervallo, 1, mean)
+classi_V_2007 = cut(avg_intervallo, breaks=classi_V, labels=labels_classi)
+
+intervallo = cbind(V_dataset[,19:24])
+avg_intervallo = apply(intervallo, 1, mean)
+classi_V_2013 = cut(avg_intervallo, breaks=classi_V, labels=labels_classi)
+
+intervallo = cbind(V_dataset[,25:30])
+avg_intervallo = apply(intervallo, 1, mean)
+classi_V_2019 = cut(avg_intervallo, breaks=classi_V, labels=labels_classi)
+
+# DEFINISCO I GRAFICI DI FREQUENZA PER OGNI VARIABILE E CLASSE
+
+barplot(table(classi_D_1995), col=2:3, main="DPM: Frequenze Assolute",
+        sub="Intervallo 1990-1995", ylim=c(0,16), space=0.2)
+barplot(table(classi_D_2001),col=4:5, main="DPM: Frequenze Assolute",
+        sub="Intervallo 1996-2001", ylim=c(0,16), space=1)
+barplot(table(classi_D_2007),col=6:7, main="DPM: Frequenze Assolute",
+        sub="Intervallo 2002-2007", ylim=c(0,16), space=1)
+barplot(table(classi_D_2013),col=2:3, main="DPM: Frequenze Assolute",
+        sub="Intervallo 2008-2013", ylim=c(0,16), space=1)
+barplot(table(classi_D_2019),col=4:5, main="DPM: Frequenze Assolute",
+        sub="Intervallo 2014-2019", ylim=c(0,16), space=1)
+
