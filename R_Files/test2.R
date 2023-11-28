@@ -267,7 +267,8 @@ ggplot(df, aes(fill=classi, y=VSL, x=anni)) +
   geom_bar(position="dodge", stat="identity", width=0.8,
            alpha=0.7, colour="black") + 
   ggtitle("Grafico delle Frequenze","VSL per Classi di Età (1995 - 2004)") + 
-  theme(panel.background = element_blank(), axis.line = element_line(colour = "black"))
+  theme(panel.background = element_blank(), axis.line = element_line(colour = "black")) + 
+  scale_fill_manual(values = c("<15" = "lightgreen", ">15 & <64" = "orange", ">64" = "red"))
 
 #2005-2014
 anni=2005:2014
