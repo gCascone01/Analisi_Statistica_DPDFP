@@ -150,12 +150,60 @@ colnames(resumeDispersione) = c("VAR", "SD")
 rownames(resumeDispersione) = c("DPM","VSL")
 View(resumeDispersione)
 
+# CV
+
+cv <- function (data){
+  sd(data)/abs(mean(data))
+}
+
+cv(D_dataset["Italia",])
+cv(D_dataset)
+
+cv(V_dataset["Italia",])
+cv(V_dataset)
+
 #---- QUARTILI ----
 D_quantile = quantile(sort(D_dataset))
 V_quantile = quantile(sort(V_dataset))
 
 boxplot(D_quantile, main="Boxplot DPM", xlab="DPM")
 boxplot(V_quantile, main="Boxplot VSL", xlab="VSL")
+
+#---- FdDC - Funzione di Distribuzione Empirica Continua ITALIA ----
+min_D_It <- min(D_dataset["Italia",])
+max_D_It <- max(D_dataset["Italia",])
+classi_D_IT = c(min_D_It, min_D_It+(max_D_It-min_D_It)/5, min_D_It+2*(max_D_It-min_D_It)/5, 
+                min_D_It+3*(max_D_It-min_D_It)/5, min_D_It+4*(max_D_It-min_D_It)/5, max_D_It)
+
+freqrel_IT <- table(D_dataset["Italia",])/length(D_dataset["Italia",])
+
+freqrel_D_IT <- table(cut(D_dataset["Italia",], breaks = classi_D_IT, right=FALSE))/length(D_dataset["Italia",])
+
+Fcum_IT <- cumsum(freqrel_D_IT)
+
+Fcum_IT[5] = Fcum_IT[5] + freqrel_IT[length(freqrel_D_IT)]
+
+plot(Fcum_IT, type="b")
+
+#---- FdDC - Funzione di Distribuzione Empirica Continua UNIONE EUROPEA ----
+min_D_EU <- min(D_dataset)
+max_D_EU <- max(D_dataset)
+classi_D_EU = c(min_D_EU, min_D_EU+(max_D_EU-min_D_EU)/5, min_D_EU+2*(max_D_EU-min_D_EU)/5, 
+                min_D_EU+3*(max_D_EU-min_D_EU)/5, min_D_EU+4*(max_D_EU-min_D_EU)/5, max_D_EU)
+
+freqrel_EU <- table(D_dataset)/length(D_dataset)
+
+freqrel_D_EU <- table(cut(D_dataset, breaks = classi_D_EU, right=FALSE))/length(D_dataset)
+
+Fcum_EU <- cumsum(freqrel_D_EU)
+
+Fcum_EU[5] = Fcum_EU[5] + freqrel_EU[length(freqrel_D_EU)]
+
+plot(Fcum_EU, type="b")
+
+#---- fare FdDC per VSL ----
+
+
 
 #---- DEFINISCO SERIE TEMPORALI, SEPARATAMENTE ITALIA ED EUROPA ----
 
