@@ -5,11 +5,11 @@ library(readxl)
 
 #---- CARICO I DATASET ----
 
-pathGitProject_Gio = "C:/Users/user/Desktop/Magistrale/Statistica e Analisi dei Dati/SAD_Project"
-setwd(pathGitProject_Gio)
+#pathGitProject_Gio = "C:/Users/user/Desktop/Magistrale/Statistica e Analisi dei Dati/SAD_Project"
+#setwd(pathGitProject_Gio)
 
-#pathGitProject_Ciro = "C:/Users/UTENTE/git/SAD_Project"
-#setwd(pathGitProject_Ciro)
+pathGitProject_Ciro = "C:/Users/UTENTE/git/SAD_Project"
+setwd(pathGitProject_Ciro)
 
 mydata = read_xlsx('./Datasets/European-Country/Complete_Dataset.xlsx', 1)
 data = as.matrix(mydata)
@@ -95,7 +95,7 @@ colnames(V_datasetComp) = years
 colnames(D_dataset64) = years
 colnames(V_dataset64) = years
 
-#---- CALCOLO MINIMO, MASSIMO E CAMPO DI VARIAZIONE ----
+#---- CALCOLO INDICI CENTRALITÀ e DISPERSIONE ----
 
 D_min = min(D_dataset)
 V_min = min(V_dataset)
@@ -103,13 +103,59 @@ V_min = min(V_dataset)
 D_max = max(D_dataset)
 V_max = max(V_dataset)
 
+D_mean = mean(D_dataset)
+V_mean = mean(V_dataset)
+
+D_median = median(D_dataset)
+V_median = median(V_dataset)
+
+# D_summary = summary(D_dataset)
+# V_summary = summary(V_dataset)
+
+resumeCentralità = rbind(c(D_min,D_max,D_mean,D_median),c(V_min,V_max,V_mean,V_median))
+colnames(resumeCentralità) = c("MIN", "MAX", "MEAN", "MEDIAN")
+rownames(resumeCentralità) = c("DPM","VSL")
+View(resumeCentralità)
+
+# Campo di Variazione: sensibile ai soli valori estremi, non tenendo conto del numero di osservaz
 D_cdv = D_max - D_min
 V_cdv = V_max - V_min
 
-resume = rbind(c(D_min,D_max,D_cdv),c(V_min,V_max,V_cdv))
-colnames(resume) = c("MIN", "MAX", "CdV")
-rownames(resume) = c("DPM","VSL")
-View(resume)
+# Differenza interquartilica: meno sensibile a val estremi
+D_diffInterq = unname(quantile(sort(D_dataset), probs = 0.75)) - unname(quantile(sort(D_dataset), probs = 0.25))
+V_diffInterq = unname(quantile(sort(V_dataset), probs = 0.75)) - unname(quantile(sort(V_dataset), probs = 0.25))
+
+# Varianza per tutto dataset
+D_var = var(as.vector(D_dataset))
+V_var = var(as.vector(V_dataset))
+
+# Varianza per colonne
+# D_var = var(D_dataset)
+# V_var = var(V_dataset)
+
+# Varianza per righe
+D_var_righe = apply(D_dataset, 1, var)
+V_var_righe = apply(V_dataset, 1, var)
+
+# Varianza per colonne
+D_var_colonne = apply(D_dataset, 2, var)
+V_var_colonne = apply(V_dataset, 2, var)
+
+# Deviazione Standard totale: valore differisce dalla media aritmetica dei valori, in media quadratica di: x
+D_sd = sd(D_dataset)
+V_sd = sd(V_dataset)
+
+resumeDispersione = rbind(c(D_var,D_sd),c(V_var,V_sd))
+colnames(resumeDispersione) = c("VAR", "SD")
+rownames(resumeDispersione) = c("DPM","VSL")
+View(resumeDispersione)
+
+#---- QUARTILI ----
+D_quantile = quantile(sort(D_dataset))
+V_quantile = quantile(sort(V_dataset))
+
+boxplot(D_quantile, main="Boxplot DPM", xlab="DPM")
+boxplot(V_quantile, main="Boxplot VSL", xlab="VSL")
 
 #---- DEFINISCO SERIE TEMPORALI, SEPARATAMENTE ITALIA ED EUROPA ----
 
@@ -220,11 +266,9 @@ barplot(table(classi_V_2015), col=c("darkgreen", "lightgreen", "yellow", "orange
 points(getX(V_dataset,21,classi_V),0.5,col="blue",pch=19, cex=1.5)
 legend("topright", pch=19, col="blue", legend="Italia")
 
-# PROCEDIMENTO UTILE, TROVARE UNA SUDDIVISIONE!!!
+#---- GRAFICO A BARRE SOVRAPPOSTE ----
 install.packages("ggplot2")
 library(ggplot2)
-
-#Per il DPM
 
 #1995-2004
 anni=1995:2004
@@ -242,6 +286,19 @@ ggplot(df, aes(fill=classi, y=DPM, x=anni)) +
 #labs(title = "MAIN TITLE", x = "X-AXIS TITLE", y = "Y-AXIS TITLE")
 
 #2005-2014
+anni=2005:2014
+classi=rep(c("<15",">15 & <64",">64"),10)
+DPM=cbind(apply(D_dataset15[,11:20],2,mean),
+          apply(D_datasetComp[,11:20],2,mean),apply(D_dataset64[,11:20],2,mean))
+DPM=c(t(DPM))
+df=data.frame(anni, classi, DPM)
+ggplot(df, aes(fill=classi, y=DPM, x=anni)) + 
+  geom_bar(position="dodge", stat="identity", width=0.8,
+           alpha=0.7, colour="black") + 
+  ggtitle("Grafico delle Frequenze","DPM per Classi di Età (2005 - 2014)") + 
+  theme(panel.background = element_blank(), axis.line = element_line(colour = "black"))
+
+#2015-2019
 anni=2005:2014
 classi=rep(c("<15",">15 & <64",">64"),10)
 DPM=cbind(apply(D_dataset15[,11:20],2,mean),
