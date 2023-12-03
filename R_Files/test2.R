@@ -5,11 +5,11 @@ library(readxl)
 
 #---- CARICO I DATASET ----
 
-#pathGitProject_Gio = "C:/Users/user/Desktop/Magistrale/Statistica e Analisi dei Dati/SAD_Project"
-#setwd(pathGitProject_Gio)
+pathGitProject_Gio = "C:/Users/user/Desktop/Magistrale/Statistica e Analisi dei Dati/SAD_Project"
+setwd(pathGitProject_Gio)
 
-pathGitProject_Ciro = "C:/Users/UTENTE/git/SAD_Project"
-setwd(pathGitProject_Ciro)
+#pathGitProject_Ciro = "C:/Users/UTENTE/git/SAD_Project"
+#setwd(pathGitProject_Ciro)
 
 mydata = read_xlsx('./Datasets/European-Country/Complete_Dataset.xlsx', 1)
 data = as.matrix(mydata)
@@ -236,87 +236,11 @@ classi_D = c(D_min, D_min+(D_max-D_min)/5, D_min+2*(D_max-D_min)/5,
 classi_V = c(V_min, V_min+(V_max-V_min)/5, V_min+2*(V_max-V_min)/5, 
              V_min+3*(V_max-V_min)/5, V_min+4*(V_max-V_min)/5, V_max)
 
-#PER OGNI INTERVALLO (A STEP DI 5 ANNI) CREO LE CLASSI
-classi_D_1995 = cut(D_dataset[,1], breaks=classi_D, labels=labels_classi)
-classi_D_2000 = cut(D_dataset[,6], breaks=classi_D, labels=labels_classi)
-classi_D_2005 = cut(D_dataset[,11], breaks=classi_D, labels=labels_classi)
-#classi_D_2005 già lo abbiamo per il secondo slot temporale
-classi_D_2010 = cut(D_dataset[,16], breaks=classi_D, labels=labels_classi)
-classi_D_2015 = cut(D_dataset[,21], breaks=classi_D, labels=labels_classi)
-
-classi_V_1995 = cut(V_dataset[,1], breaks=classi_V, labels=labels_classi)
-classi_V_2000 = cut(V_dataset[,6], breaks=classi_V, labels=labels_classi)
-classi_V_2005 = cut(V_dataset[,11], breaks=classi_V, labels=labels_classi)
-#classi_V_2005 già lo abbiamo per il secondo slot temporale
-classi_V_2010 = cut(V_dataset[,16], breaks=classi_V, labels=labels_classi)
-classi_V_2015 = cut(V_dataset[,21], breaks=classi_V, labels=labels_classi)
-
-#---- DISEGNO I BARPLOT (GRAFICI DI FREQUENZA) ----
-
-#getX la uso semplicemente per definire le coordinate del pallino "Italia" (vedi il plot sottostante)
-getX = function(ds, i, classi){
-  if(cut(ds["Italia",i], breaks=classi, labels=labels_classi) == "Very Low") return(1)
-  else if(cut(ds["Italia",i], breaks=classi, labels=labels_classi) == "Low") return(2.5)
-  else if(cut(ds["Italia",i], breaks=classi, labels=labels_classi) == "Medium") return(4)
-  else if(cut(ds["Italia",i], breaks=classi, labels=labels_classi) == "High") return(5.5)
-  else if(cut(ds["Italia",i], breaks=classi, labels=labels_classi) == "Very High") return(7)
-}
-
-#DPM
-barplot(table(classi_D_1995), col=c("darkgreen", "lightgreen", "yellow", "orange", "red"), main="DPM: Frequenze Assolute",
-        sub="Anno 1995", ylim=c(0,16), space=0.3, width=1.2)
-points(getX(D_dataset,1,classi_D),0.5,col="blue",pch=19, cex=1.5)
-legend("topright", pch=19, col="blue", legend="Italia")
-
-barplot(table(classi_D_2000), col=c("darkgreen", "lightgreen", "yellow", "orange", "red"), main="DPM: Frequenze Assolute",
-        sub="Anno 2000", ylim=c(0,16), space=0.3, width=1.2)
-points(getX(D_dataset,6,classi_D),0.5,col="blue",pch=19, cex=1.5)
-legend("topright", pch=19, col="blue", legend="Italia")
-
-barplot(table(classi_D_2005), col=c("darkgreen", "lightgreen", "yellow", "orange", "red"), main="DPM: Frequenze Assolute",
-        sub="Anno 2005", ylim=c(0,16), space=0.3, width=1.2)
-points(getX(D_dataset,11,classi_D),0.5,col="blue",pch=19, cex=1.5)
-legend("topright", pch=19, col="blue", legend="Italia")
-
-barplot(table(classi_D_2010), col=c("darkgreen", "lightgreen", "yellow", "orange", "red"), main="DPM: Frequenze Assolute",
-        sub="Anno 2010", ylim=c(0,16), space=0.3, width=1.2)
-points(getX(D_dataset,16,classi_D),0.5,col="blue",pch=19, cex=1.5)
-legend("topright", pch=19, col="blue", legend="Italia")
-
-barplot(table(classi_D_2015), col=c("darkgreen", "lightgreen", "yellow", "orange", "red"), main="DPM: Frequenze Assolute",
-        sub="Anno 2015", ylim=c(0,16), space=0.3, width=1.2)
-points(getX(D_dataset,21,classi_D),0.5,col="blue",pch=19, cex=1.5)
-legend("topright", pch=19, col="blue", legend="Italia")
-
-#VSL
-barplot(table(classi_V_1995), col=c("darkgreen", "lightgreen", "yellow", "orange", "red"), main="VSL: Frequenze Assolute",
-        sub="Anno 1995", ylim=c(0,16), space=0.3, width=1.2)
-points(getX(V_dataset,1,classi_V),0.5,col="blue",pch=19, cex=1.5)
-legend("topright", pch=19, col="blue", legend="Italia")
-
-barplot(table(classi_V_2000), col=c("darkgreen", "lightgreen", "yellow", "orange", "red"), main="VSL: Frequenze Assolute",
-        sub="Anno 2000", ylim=c(0,16), space=0.3, width=1.2)
-points(getX(V_dataset,6,classi_V),0.5,col="blue",pch=19, cex=1.5)
-legend("topright", pch=19, col="blue", legend="Italia")
-
-barplot(table(classi_V_2005), col=c("darkgreen", "lightgreen", "yellow", "orange", "red"), main="VSL: Frequenze Assolute",
-        sub="Anno 2005", ylim=c(0,16), space=0.3, width=1.2)
-points(getX(V_dataset,11,classi_V),0.5,col="blue",pch=19, cex=1.5)
-legend("topright", pch=19, col="blue", legend="Italia")
-
-barplot(table(classi_V_2010), col=c("darkgreen", "lightgreen", "yellow", "orange", "red"), main="VSL: Frequenze Assolute",
-        sub="Anno 2010", ylim=c(0,16), space=0.3, width=1.2)
-points(getX(V_dataset,16,classi_V),0.5,col="blue",pch=19, cex=1.5)
-legend("topright", pch=19, col="blue", legend="Italia")
-
-barplot(table(classi_V_2015), col=c("darkgreen", "lightgreen", "yellow", "orange", "red"), main="VSL: Frequenze Assolute",
-        sub="Anno 2015", ylim=c(0,16), space=0.3, width=1.2)
-points(getX(V_dataset,21,classi_V),0.5,col="blue",pch=19, cex=1.5)
-legend("topright", pch=19, col="blue", legend="Italia")
-
 #---- GRAFICO A BARRE SOVRAPPOSTE ----
 install.packages("ggplot2")
 library(ggplot2)
+
+# DPL
 
 #1995-2004
 anni=1995:2004
@@ -331,8 +255,6 @@ ggplot(df, aes(fill=classi, y=DPM, x=anni)) +
   ggtitle("Grafico delle Frequenze","DPM per Classi di Età (1995 - 2004)") + 
   theme(panel.background = element_blank(), axis.line = element_line(colour = "black"))
 
-#labs(title = "MAIN TITLE", x = "X-AXIS TITLE", y = "Y-AXIS TITLE")
-
 #2005-2014
 anni=2005:2014
 classi=rep(c("<15",">15 & <64",">64"),10)
@@ -346,20 +268,7 @@ ggplot(df, aes(fill=classi, y=DPM, x=anni)) +
   ggtitle("Grafico delle Frequenze","DPM per Classi di Età (2005 - 2014)") + 
   theme(panel.background = element_blank(), axis.line = element_line(colour = "black"))
 
-#2015-2019
-anni=2005:2014
-classi=rep(c("<15",">15 & <64",">64"),10)
-DPM=cbind(apply(D_dataset15[,11:20],2,mean),
-          apply(D_datasetComp[,11:20],2,mean),apply(D_dataset64[,11:20],2,mean))
-DPM=c(t(DPM))
-df=data.frame(anni, classi, DPM)
-ggplot(df, aes(fill=classi, y=DPM, x=anni)) + 
-  geom_bar(position="dodge", stat="identity", width=0.8,
-           alpha=0.7, colour="black") + 
-  ggtitle("Grafico delle Frequenze","DPM per Classi di Età (2005 - 2014)") + 
-  theme(panel.background = element_blank(), axis.line = element_line(colour = "black"))
-
-#Per il VSL
+# VSL
 
 #1995-2004
 anni=1995:2004
