@@ -1,5 +1,3 @@
-#install.packages('xlsx')
-#library(xlsx)
 install.packages('readxl')
 library(readxl)
 
@@ -25,21 +23,21 @@ data64 = as.matrix(mydata64)
 
 #---- DAI DATASET COSTRUISCO LE MATRICI ----
 
-# IDEA: RIMOSSI ANNI PRIMA DEL 95 E DOPO IL 2014
+# Anni: dal '95 al 2005 - Manca Cipro (Quando lo aggiungiamo, nrow=27)
 
 # CREO MATRICI CON I DATI
 
-dataset = matrix(data[,-1],nrow=26) # nrow = 27 quando aggiungiamo Cipro
-dataset = matrix( as.double(dataset) , nrow=26) # idem
+dataset = matrix(data[,-1],nrow=26)
+dataset = matrix( as.double(dataset) , nrow=26)
 
-dataset15 = matrix(data[,-1],nrow=26) # nrow = 27 quando aggiungiamo Cipro
-dataset15 = matrix( as.double(dataset) , nrow=26) # idem
+dataset15 = matrix(data15[,-1],nrow=26)
+dataset15 = matrix( as.double(dataset15) , nrow=26)
 
-datasetComp = matrix(data[,-1],nrow=26) # nrow = 27 quando aggiungiamo Cipro
-datasetComp = matrix( as.double(dataset) , nrow=26) # idem
+datasetComp = matrix(dataComp[,-1],nrow=26)
+datasetComp = matrix( as.double(datasetComp) , nrow=26)
 
-dataset64 = matrix(data[,-1],nrow=26) # nrow = 27 quando aggiungiamo Cipro
-dataset64 = matrix( as.double(dataset) , nrow=26) # idem
+dataset64 = matrix(data64[,-1],nrow=26)
+dataset64 = matrix( as.double(dataset64) , nrow=26)
 
 # RIMUOVO ANNI CHE NON MI INTERESSANO
 
