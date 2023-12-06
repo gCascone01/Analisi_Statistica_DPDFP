@@ -1,13 +1,19 @@
 install.packages('readxl')
 library(readxl)
+install.packages("ggplot2")
+library(ggplot2)
+
+#---- DEFINIZIONE DEI PATH ----
+
+#pathGitProject_Gio = "C:/Users/user/Desktop/Magistrale/Statistica e Analisi dei Dati/SAD_Project"
+#setwd(pathGitProject_Gio)
+#source("Functions.R")
+
+pathGitProject_Ciro = "C:/Users/UTENTE/git/SAD_Project"
+setwd(pathGitProject_Ciro)
+source("Functions.R")
 
 #---- CARICO I DATASET ----
-
-pathGitProject_Gio = "C:/Users/user/Desktop/Magistrale/Statistica e Analisi dei Dati/SAD_Project"
-setwd(pathGitProject_Gio)
-
-#pathGitProject_Ciro = "C:/Users/UTENTE/git/SAD_Project"
-#setwd(pathGitProject_Ciro)
 
 mydata = read_xlsx('./Datasets/PIL/Complete_PIL.xlsx', 1)
 data = as.matrix(mydata)
@@ -131,10 +137,6 @@ View(resume)
 
 # CV
 
-cv <- function (data){
-  sd(data)/abs(mean(data))
-}
-
 cv(D_dataset["Italia",])
 cv(D_dataset["Germania",])
 cv(D_dataset["Francia",])
@@ -151,26 +153,6 @@ cv(V_dataset)
 
 #---- QUARTILI ----
 
-# Funzione che crea un grafico con i boxplot di 5 anni consecutivi
-f_quantili = function (x){
-  D_quantile1 = quantile(sort(D_dataset[,x]))
-  D_quantile2 = quantile(sort(D_dataset[,x+1]))
-  D_quantile3 = quantile(sort(D_dataset[,x+2]))
-  D_quantile4 = quantile(sort(D_dataset[,x+3]))
-  D_quantile5 = quantile(sort(D_dataset[,x+4]))
-  
-  V_quantile1 = quantile(sort(V_dataset[,x+1]))
-  V_quantile2 = quantile(sort(V_dataset[,x+2]))
-  V_quantile3 = quantile(sort(V_dataset[,x+3]))
-  V_quantile4 = quantile(sort(V_dataset[,x+4]))
-  V_quantile5 = quantile(sort(V_dataset[,x+5]))
-  
-  boxplot(D_quantile1,D_quantile2,D_quantile3,D_quantile4,D_quantile5,
-          main="Boxplot DPM", xlab="DPM", names=c(1994+x):(1998+x), col=rainbow(5))
-  boxplot(V_quantile1,V_quantile2,V_quantile3,V_quantile4,V_quantile5,
-          main="Boxplot VSL", xlab="VSL", names=c(1994+x):(1998+x), col=rainbow(5))
-}
-
 f_quantili(1)
 f_quantili(6)
 f_quantili(11)
@@ -178,75 +160,15 @@ f_quantili(16)
 
 #---- FdDC - Funzione di Distribuzione Empirica Continua ITALIA ----
 
-f_FdDC = function(x){
-  
-  #DPM
-  
-  min_D_It <- min(D_dataset[x,])
-  max_D_It <- max(D_dataset[x,])
-  classi_D_IT = c(min_D_It, min_D_It+(max_D_It-min_D_It)/5, min_D_It+2*(max_D_It-min_D_It)/5, 
-                  min_D_It+3*(max_D_It-min_D_It)/5, min_D_It+4*(max_D_It-min_D_It)/5, max_D_It)
-  
-  freqrel_IT <- table(D_dataset[x,])/length(D_dataset[x,])
-  
-  freqrel_D_IT <- table(cut(D_dataset[x,], breaks = classi_D_IT, right=FALSE))/length(D_dataset[x,])
-  
-  Fcum_IT <- cumsum(freqrel_D_IT)
-  
-  Fcum_IT[5] = Fcum_IT[5] + freqrel_IT[length(freqrel_D_IT)]
-  
-  plot(Fcum_IT, type="b", main=paste("FdDC - DPM",x, sep = " "))
-  
-  #VSL
-  min_D_It <- min(V_dataset[x,])
-  max_D_It <- max(V_dataset[x,])
-  classi_D_IT = c(min_D_It, min_D_It+(max_D_It-min_D_It)/5, min_D_It+2*(max_D_It-min_D_It)/5, 
-                  min_D_It+3*(max_D_It-min_D_It)/5, min_D_It+4*(max_D_It-min_D_It)/5, max_D_It)
-  
-  freqrel_IT <- table(V_dataset[x,])/length(V_dataset[x,])
-  
-  freqrel_D_IT <- table(cut(V_dataset[x,], breaks = classi_D_IT, right=FALSE))/length(V_dataset[x,])
-  
-  Fcum_IT <- cumsum(freqrel_D_IT)
-  
-  Fcum_IT[5] = Fcum_IT[5] + freqrel_IT[length(freqrel_D_IT)]
-  
-  plot(Fcum_IT, type="b", main=paste("FdDC - VSL",x, sep = " "))
-}
-
 f_FdDC("Italia")
 f_FdDC("Germania")
 f_FdDC("Francia")
 f_FdDC("Spagna")
 f_FdDC("Paesi Bassi")
 
-#---- DEFINISCO SERIE TEMPORALI, SEPARATAMENTE ITALIA ED EUROPA ----
+#---- DEFINISCO SERIE TEMPORALI ----
 
-#DPM
-serieD_IT = ts(D_dataset["Italia",])
-serieD_GE = ts(D_dataset["Germania",])
-serieD_FR = ts(D_dataset["Francia",])
-serieD_PB = ts(D_dataset["Paesi Bassi",])
-serieD_SP = ts(D_dataset["Spagna",])
-serieD = data.frame(serieD_IT, serieD_GE,serieD_FR,serieD_PB,serieD_SP)
-serieD = ts(serieD, start = 1995, frequency = 1)
-plot.ts(serieD, plot.type = "single", col = rainbow(5), xlab="", ylab="DPM",
-        main="Valori DPM dal 1995 al 2015", type="b", pch=20, bty="l")
-grid()
-legend("topright",c("Italia","Germania","Francia","Paesi Bassi","Spagna"),pch=c(20,20),col=rainbow(5))
-
-#VSL
-serieV_IT = ts(V_dataset["Italia",])
-serieV_GE = ts(V_dataset["Germania",])
-serieV_FR = ts(V_dataset["Francia",])
-serieV_PB = ts(V_dataset["Paesi Bassi",])
-serieV_SP = ts(V_dataset["Spagna",])
-serieV = data.frame(serieV_IT, serieV_GE,serieV_FR,serieV_PB,serieV_SP)
-serieV = ts(serieV, start = 1995, frequency = 1)
-plot.ts(serieV, plot.type = "single", col = rainbow(5), xlab="", ylab="VSL",
-        main="Valori VSL dal 1995 al 2015", type="b", pch=20, bty="l")
-grid()
-legend("topleft",c("Italia","Germania","Francia","Paesi Bassi","Spagna"),pch=c(20,20),col=rainbow(5))
+f_timeSeries(1)
 
 #---- DEFINISCO LE CLASSI ----
 
@@ -258,75 +180,9 @@ classi_V = c(V_min, V_min+(V_max-V_min)/5, V_min+2*(V_max-V_min)/5,
              V_min+3*(V_max-V_min)/5, V_min+4*(V_max-V_min)/5, V_max)
 
 #---- GRAFICO A BARRE SOVRAPPOSTE ----
-install.packages("ggplot2")
-library(ggplot2)
 
-# DPL
-
-#1995-2004 ITALIA
-anni=1995:2014
-classi=rep(c("15 -","15 + & 64 -","64+"),20)
-DPM=cbind(D_dataset15["Italia",1:20], D_datasetComp["Italia",1:20], D_dataset64["Italia",1:20])
-DPM=c(t(DPM))
-df=data.frame(anni, classi, DPM)
-ggplot(df, aes(fill=classi, y=DPM, x=anni)) + 
-  geom_bar(position="dodge", stat="identity", width=0.8,
-           alpha=0.7, colour="black") + 
-  ggtitle("Grafico delle Frequenze","DPM per Classi di Età (1995 - 2004) - ITALIA") + 
-  theme(panel.background = element_blank(), axis.line = element_line(colour = "black"))
-
-#1995-2004 
-anni=1995:2004
-classi=rep(c("<15",">15 & <64",">64"),10)
-DPM=cbind(apply(D_dataset15[,1:10],2,mean),
-          apply(D_datasetComp[,1:10],2,mean),apply(D_dataset64[,1:10],2,mean))
-DPM=c(t(DPM))
-df=data.frame(anni, classi, DPM)
-ggplot(df, aes(fill=classi, y=DPM, x=anni)) + 
-  geom_bar(position="dodge", stat="identity", width=0.8,
-           alpha=0.7, colour="black") + 
-  ggtitle("Grafico delle Frequenze","DPM per Classi di Età (1995 - 2004)") + 
-  theme(panel.background = element_blank(), axis.line = element_line(colour = "black"))
-
-#2005-2014
-anni=2005:2014
-classi=rep(c("<15",">15 & <64",">64"),10)
-DPM=cbind(apply(D_dataset15[,11:20],2,mean),
-          apply(D_datasetComp[,11:20],2,mean),apply(D_dataset64[,11:20],2,mean))
-DPM=c(t(DPM))
-df=data.frame(anni, classi, DPM)
-ggplot(df, aes(fill=classi, y=DPM, x=anni)) + 
-  geom_bar(position="dodge", stat="identity", width=0.8,
-           alpha=0.7, colour="black") + 
-  ggtitle("Grafico delle Frequenze","DPM per Classi di Età (2005 - 2014)") + 
-  theme(panel.background = element_blank(), axis.line = element_line(colour = "black"))
-
-# VSL
-
-#1995-2004
-anni=1995:2004
-classi=rep(c("<15",">15 & <64",">64"),10)
-VSL=cbind(apply(V_dataset15[,1:10],2,mean),
-          apply(V_datasetComp[,1:10],2,mean),apply(V_dataset64[,1:10],2,mean))
-VSL=c(t(VSL))
-df=data.frame(anni, classi, VSL)
-ggplot(df, aes(fill=classi, y=VSL, x=anni)) + 
-  geom_bar(position="dodge", stat="identity", width=0.8,
-           alpha=0.7, colour="black") + 
-  ggtitle("Grafico delle Frequenze","VSL per Classi di Età (1995 - 2004)") + 
-  theme(panel.background = element_blank(), axis.line = element_line(colour = "black")) + 
-  scale_fill_manual(values = c("<15" = "lightgreen", ">15 & <64" = "orange", ">64" = "red"))
-
-#2005-2014
-anni=2005:2014
-classi=rep(c("<15",">15 & <64",">64"),10)
-VSL=cbind(apply(V_dataset15[,1:10],2,mean),
-          apply(V_datasetComp[,1:10],2,mean),apply(V_dataset64[,1:10],2,mean))
-VSL=c(t(VSL))
-df=data.frame(anni, classi, VSL)
-ggplot(df, aes(fill=classi, y=VSL, x=anni)) + 
-  geom_bar(position="dodge", stat="identity", width=0.8,
-           alpha=0.7, colour="black") + 
-  ggtitle("Grafico delle Frequenze","VSL per Classi di Età (2005 - 2014)") + 
-  theme(panel.background = element_blank(), axis.line = element_line(colour = "black"))
-
+f_barre("Italia")
+f_barre("Spagna")
+f_barre("Germania")
+f_barre("Spagna")
+f_barre("Paesi Bassi")

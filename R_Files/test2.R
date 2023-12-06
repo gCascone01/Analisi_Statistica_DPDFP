@@ -3,11 +3,11 @@ library(readxl)
 
 #---- CARICO I DATASET ----
 
-pathGitProject_Gio = "C:/Users/user/Desktop/Magistrale/Statistica e Analisi dei Dati/SAD_Project"
-setwd(pathGitProject_Gio)
+#pathGitProject_Gio = "C:/Users/user/Desktop/Magistrale/Statistica e Analisi dei Dati/SAD_Project"
+#setwd(pathGitProject_Gio)
 
-#pathGitProject_Ciro = "C:/Users/UTENTE/git/SAD_Project"
-#setwd(pathGitProject_Ciro)
+pathGitProject_Ciro = "C:/Users/UTENTE/git/SAD_Project"
+setwd(pathGitProject_Ciro)
 
 mydata = read_xlsx('./Datasets/European-Country/Complete_Dataset.xlsx', 1)
 data = as.matrix(mydata)
