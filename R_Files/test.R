@@ -122,7 +122,7 @@ V_diffInterq = unname(quantile(sort(V_dataset), probs = 0.75)) - unname(quantile
 D_var = var(as.vector(D_dataset))
 V_var = var(as.vector(V_dataset))
 
-# Varianza per colonne (Forse ha più senso farlo per colonne, ragioniamoci bene)
+# Varianza per colonne (Forse ha più senso farlo per righe, ragioniamoci bene)
 D_var_col = apply(D_dataset, 2, var)
 V_var_col = apply(D_dataset, 2, var)
 
@@ -168,21 +168,22 @@ f_FdDC("Paesi Bassi")
 
 #---- DEFINISCO SERIE TEMPORALI ----
 
-f_timeSeries(1)
+f_timeSeries(D_dataset, V_dataset)
+
 
 #---- DEFINISCO LE CLASSI ----
 
 #CREO LE SUDDIVISIONI
 labels_classi = c("Very Low", "Low", "Medium", "High", "Very High")
-classi_D = c(D_min, D_min+(D_max-D_min)/5, D_min+2*(D_max-D_min)/5, 
-             D_min+3*(D_max-D_min)/5, D_min+4*(D_max-D_min)/5, D_max)
-classi_V = c(V_min, V_min+(V_max-V_min)/5, V_min+2*(V_max-V_min)/5, 
-             V_min+3*(V_max-V_min)/5, V_min+4*(V_max-V_min)/5, V_max)
+classi_D = c(D_min, D_min+(D_max-D_min)/n_countries, D_min+2*(D_max-D_min)/n_countries, 
+             D_min+3*(D_max-D_min)/n_countries, D_min+4*(D_max-D_min)/n_countries, D_max)
+classi_V = c(V_min, V_min+(V_max-V_min)/n_countries, V_min+2*(V_max-V_min)/n_countries, 
+             V_min+3*(V_max-V_min)/n_countries, V_min+4*(V_max-V_min)/n_countries, V_max)
 
 #---- GRAFICO A BARRE SOVRAPPOSTE ----
 
-f_barre("Italia")
-f_barre("Spagna")
-f_barre("Germania")
-f_barre("Spagna")
-f_barre("Paesi Bassi")
+f_barre_D("Italia")
+f_barre_D("Spagna")
+f_barre_D("Germania")
+f_barre_D("Spagna")
+f_barre_D("Paesi Bassi")
