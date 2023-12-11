@@ -67,7 +67,7 @@ dataset64=dataset64[,-c(1:10,43:50)]
 
 #Definizione nomi righe con nomi nazioni
 
-countries = c("Austria", "Belgio", "Bulgaria", "Croazia", "Danimarca", "Estonia", "Finlandia", "Francia", "Germania", "Grecia", "Ungheria", "Irlanda", "Italia", "Lettonia", "Lituania", "Lussemburgo", "Malta", "Paesi Bassi", "Polonia", "Portogallo", "Repubblica Ceca", "Romania", "Slovacchia", "Slovenia", "Spagna", "Svezia")
+countries = c("Austria", "Belgio", "Bulgaria", "Croazia", "Danimarca", "Estonia", "Finlandia", "Francia", "Germania", "Grecia", "Ungheria", "Irlanda", "Italia", "Lettonia", "Lituania", "Lussemburgo", "Malta", "Paesi Bassi", "Polonia", "Portogallo", "Rep. Ceca", "Romania", "Slovacchia", "Slovenia", "Spagna", "Svezia")
 rownames(dataset) = countries
 rownames(dataset15) = countries
 rownames(datasetComp) = countries
@@ -348,18 +348,6 @@ classi_V = c(V_min, V_min+(V_max-V_min)/n_countries, V_min+2*(V_max-V_min)/n_cou
 #---- GRAFICO A BARRE SOVRAPPOSTE ----
 for(country in countries){
   print(f_barre_sovrapp_per_eta(country,D_dataset15,D_datasetComp,D_dataset64,"DPM"))
-}
-
-# par(mfrow=c(1, 1))
-```
-
-### Grafico a Barre Sovrapposte per VSL (per country)
-
-```{r grafico a barre sovrapposte VSL, echo=FALSE}
-
-#---- GRAFICO A BARRE SOVRAPPOSTE ----
-for(country in countries){
-  print(f_barre_sovrapp_per_eta(country,V_dataset15,V_datasetComp,V_dataset64,"VSL"))
 }
 
 # par(mfrow=c(1, 1))

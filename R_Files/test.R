@@ -168,7 +168,7 @@ f_FdDC("Paesi Bassi")
 
 #---- DEFINISCO SERIE TEMPORALI ----
 
-f_timeSeries(D_dataset, V_dataset)
+f_timeSeries(D_dataset, "DPM")
 
 
 #---- DEFINISCO LE CLASSI ----
@@ -180,7 +180,7 @@ classi_D = c(D_min, D_min+(D_max-D_min)/n_countries, D_min+2*(D_max-D_min)/n_cou
 classi_V = c(V_min, V_min+(V_max-V_min)/n_countries, V_min+2*(V_max-V_min)/n_countries, 
              V_min+3*(V_max-V_min)/n_countries, V_min+4*(V_max-V_min)/n_countries, V_max)
 
-#---- GRAFICO A BARRE SOVRAPPOSTE ----
+#---- GRAFICO A BARRE SO VRAPPOSTE ----
 
 f_barre_D("Italia")
 f_barre_D("Spagna")

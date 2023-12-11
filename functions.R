@@ -56,6 +56,11 @@ f_FdDC = function(country){
 
 #Funzione per rappresentazione delle serie temporali
 f_timeSeries = function(data,tipo){
+  colori = c("antiquewhite1","antiquewhite4","aquamarine","aquamarine4","azure3",
+             "azure4","hotpink","black","blue","blueviolet","brown","burlywood",
+             "burlywood4","cadetblue3","chartreuse","chartreuse4","chocolate",
+             "chocolate1","chocolate4","cornflowerblue","cyan","cyan3","darkblue",
+             "darkgoldenrod1","darkmagenta","darksalmon","red")
   #DPM
   list_ts <- list()
   
@@ -67,10 +72,12 @@ f_timeSeries = function(data,tipo){
   
   
   ts = ts(df,start=1995, frequency=1)
-  plot.ts(ts, plot.type = "single", col = rainbow(5), xlab="", ylab=tipo,
-          main=paste(tipo, " Serie Storica: 1995-2015"), type="b", pch=20, bty="l")
+  par(mar=c(5,4,4,15),xpd=TRUE)
+  plot.ts(ts, plot.type = "single", col = colori, xlab="", ylab=tipo,
+          main=paste(tipo, " Serie Storica: 1995-2015"), type="l", bty="l")
   grid()
-  # legend("topleft",c(countries[1:nrow(data)]), pch=c(20,20),col=rainbow(nrow(data)))
+  legend("topright",inset=c(-0.38,0),c(countries[1:14]), pch=c(20,20),col=colori[1:15])
+  legend("topright",inset=c(-0.83,0),c(countries[15:nrow(data)]), pch=c(20,20),col=colori[15:27])
 }
 
 #Funzione per i barplot di DPM
