@@ -83,8 +83,8 @@ f_timeSeries = function(data,tipo){
 #Funzione per i barplot di DPM
 #Per VSL non ha senso farlo, i valori sono uguali per ogni fascia di età
 f_barre_sovrapp_per_eta = function(country, data_15, dataComp, data64, tipo){
-  anni=rep(c(1995:2015),each=3)
-  classi=rep(c("15 -","15 + & 64 -","64+"),21)
+  anni=rep(c(1995:2018),each=3)
+  classi=rep(c("15 -","15 + & 64 -","64+"),24)
   
   values=c(t(cbind(data_15[country,], dataComp[country,], data64[country,])))
   df=data.frame(anni, classi, values)

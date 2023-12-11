@@ -15,18 +15,18 @@ source("Functions.R")
 
 #---- CARICO I DATASET ----
 
-n_countries = 26
+n_countries = 27
 
-mydata = read_xlsx('./Datasets/PIL/Complete_Dataset.xlsx', 1)
+mydata = read_xlsx('./Datasets/European-Country/Complete_Dataset.xlsx', 1)
 data = as.matrix(mydata)
 
-mydata15 = read_xlsx('./Datasets/PIL/less15.xlsx', 1)
+mydata15 = read_xlsx('./Datasets/European-Country/less15.xlsx', 1)
 data15 = as.matrix(mydata15)
 
-mydataComp = read_xlsx('./Datasets/PIL/15-64.xlsx', 1)
+mydataComp = read_xlsx('./Datasets/European-Country/15-64.xlsx', 1)
 dataComp = as.matrix(mydataComp)
 
-mydata64 = read_xlsx('./Datasets/PIL/64.xlsx', 1)
+mydata64 = read_xlsx('./Datasets/European-Country/64.xlsx', 1)
 data64 = as.matrix(mydata64)
 
 #---- DATASET to MATRICI ----
@@ -43,17 +43,17 @@ dataset64 = matrix( as.double(matrix(data64[,-1],nrow=n_countries)) , nrow=n_cou
 
 #Rimozione anni che non analizziamo
 
-dataset=dataset[,-c(1:10,43:50)]
+dataset=dataset[,-c(1:10,49:50)]
 
-dataset15=dataset15[,-c(1:10,43:50)]
+dataset15=dataset15[,-c(1:10,49:50)]
 
-datasetComp=datasetComp[,-c(1:10,43:50)]
+datasetComp=datasetComp[,-c(1:10,49:50)]
 
-dataset64=dataset64[,-c(1:10,43:50)]
+dataset64=dataset64[,-c(1:10,49:50)]
 
 #Definizione nomi righe con nomi nazioni
 
-countries = c("Austria", "Belgio", "Bulgaria", "Croazia", "Danimarca", "Estonia", "Finlandia", "Francia", "Germania", "Grecia", "Ungheria", "Irlanda", "Italia", "Lettonia", "Lituania", "Lussemburgo", "Malta", "Paesi Bassi", "Polonia", "Portogallo", "Repubblica Ceca", "Romania", "Slovacchia", "Slovenia", "Spagna", "Svezia")
+countries = c("Austria", "Belgio", "Bulgaria", "Cipro", "Croazia", "Danimarca", "Estonia", "Finlandia", "Francia", "Germania", "Grecia", "Ungheria", "Irlanda", "Italia", "Lettonia", "Lituania", "Lussemburgo", "Malta", "Paesi Bassi", "Polonia", "Portogallo", "Repubblica Ceca", "Romania", "Slovacchia", "Slovenia", "Spagna", "Svezia")
 rownames(dataset) = countries
 rownames(dataset15) = countries
 rownames(datasetComp) = countries
@@ -61,8 +61,8 @@ rownames(dataset64) = countries
 
 # Variabili (DPM (D) e VSL (D)) in DATASET SEPARATI
 
-D_Index = seq(1,42, by=2) # DEFINISCO GLI INDICI DELLE COLONNE PER OGNI VARIABILE
-V_Index = seq(2,42, by=2) # D sta per Death, V per Value
+D_Index = seq(1,48, by=2) # DEFINISCO GLI INDICI DELLE COLONNE PER OGNI VARIABILE
+V_Index = seq(2,49, by=2) # D sta per Death, V per Value
 
 D_dataset = dataset[, D_Index]
 V_dataset = dataset[, V_Index]
@@ -76,7 +76,7 @@ V_datasetComp = datasetComp[, V_Index]
 D_dataset64 = dataset64[, D_Index]
 V_dataset64 = dataset64[, V_Index]
 
-years = seq(1995,2015)
+years = seq(1995,2018)
 colnames(D_dataset) = years
 colnames(V_dataset) = years
 
@@ -263,6 +263,7 @@ f_timeSeries(V_datasetComp, "VSL COMP 15 - 64")
 f_timeSeries(D_dataset64, "DPM GREATER 64")
 f_timeSeries(V_dataset64, "VSL GREATER 64")
 
+par(mar=c(5,4,4,5),xpd=TRUE)
 
 #---- DEFINISCO LE CLASSI ----
 
