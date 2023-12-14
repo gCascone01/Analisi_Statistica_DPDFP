@@ -19,13 +19,13 @@ library(ggplot2)
 
 #---- DEFINIZIONE DEI PATH ----
 
-#pathGitProject_Gio = "C:/Users/user/Desktop/Magistrale/Statistica e Analisi dei Dati/SAD_Project"
-#setwd(pathGitProject_Gio)
-#source("Functions.R")
-
-pathGitProject_Ciro = "C:/Users/UTENTE/git/SAD_Project"
-setwd(pathGitProject_Ciro)
+pathGitProject_Gio = "C:/Users/user/Desktop/Magistrale/Statistica e Analisi dei Dati/SAD_Project"
+setwd(pathGitProject_Gio)
 source("Functions.R")
+
+#pathGitProject_Ciro = "C:/Users/UTENTE/git/SAD_Project"
+#setwd(pathGitProject_Ciro)
+#source("Functions.R")
 
 #---- CARICO I DATASET ----
 

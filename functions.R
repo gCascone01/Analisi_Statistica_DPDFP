@@ -5,22 +5,12 @@ cv <- function (data){
 
 # Funzione che crea 2 grafici (DPM e VSL) con i boxplot di 5 anni consecutivi
 f_quantili = function (year, D_data, V_data, name){
-  D_quantile1 = quantile(sort(D_dataset[,year]))
-  D_quantile2 = quantile(sort(D_dataset[,year+1]))
-  D_quantile3 = quantile(sort(D_dataset[,year+2]))
-  D_quantile4 = quantile(sort(D_dataset[,year+3]))
-  D_quantile5 = quantile(sort(D_dataset[,year+4]))
-  
-  V_quantile1 = quantile(sort(V_dataset[,year+1]))
-  V_quantile2 = quantile(sort(V_dataset[,year+2]))
-  V_quantile3 = quantile(sort(V_dataset[,year+3]))
-  V_quantile4 = quantile(sort(V_dataset[,year+4]))
-  V_quantile5 = quantile(sort(V_dataset[,year+5]))
-  
-  boxplot(D_quantile1,D_quantile2,D_quantile3,D_quantile4,D_quantile5,
+  boxplot(sort(D_data[,year]),sort(D_data[,year+1]),sort(D_data[,year+2]),
+          sort(D_data[,year+3]),sort(D_data[,year+4]),
           main=paste("Boxplot DPM ", name), xlab=paste("DPM", name), names=c(1994+year):(1998+year), col=rainbow(5))
-  boxplot(V_quantile1,V_quantile2,V_quantile3,V_quantile4,V_quantile5,
-          main=paste("Boxplot VSL ", name), xlab=paste("VSL", name), names=c(1994+year):(1998+year), col=rainbow(5))
+  boxplot(sort(V_data[,year]),sort(V_data[,year+1]),sort(V_data[,year+2]),
+          sort(V_data[,year+3]),sort(V_data[,year+4]),
+          main=paste("Boxplot VSL", name), xlab=paste("VSL", name), names=c(1994+year):(1998+year), col=rainbow(5))
 }
 
 #Funzione che calcola la FdDC di un Paese country
