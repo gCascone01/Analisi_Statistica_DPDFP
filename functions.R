@@ -4,13 +4,17 @@ cv <- function (data){
 }
 
 # Funzione che crea 2 grafici (DPM e VSL) con i boxplot di 5 anni consecutivi
-f_quantili = function (year, D_data, V_data, name){
-  boxplot(sort(D_data[,year]),sort(D_data[,year+1]),sort(D_data[,year+2]),
-          sort(D_data[,year+3]),sort(D_data[,year+4]),
-          main=paste("Boxplot DPM ", name), xlab=paste("DPM", name), names=c(1994+year):(1998+year), col=rainbow(5))
-  boxplot(sort(V_data[,year]),sort(V_data[,year+1]),sort(V_data[,year+2]),
-          sort(V_data[,year+3]),sort(V_data[,year+4]),
-          main=paste("Boxplot VSL", name), xlab=paste("VSL", name), names=c(1994+year):(1998+year), col=rainbow(5))
+f_quantili = function (year, data, name){ # name = titolo del grafico
+  if(year < 21){
+    boxplot(sort(data[,year]),sort(data[,year+1]),sort(data[,year+2]),
+            sort(data[,year+3]),sort(data[,year+4]),
+            main=paste("Boxplot ", name), xlab=name, names=c(1994+year):(1998+year), col=rainbow(5))
+  }
+  else{
+    boxplot(sort(data[,year]),sort(data[,year+1]),sort(data[,year+2]),
+            sort(data[,year+3]),
+            main=paste("Boxplot ", name), xlab=name, names=c(1994+year):(1997+year), col=rainbow(5))
+  }
 }
 
 #Funzione che calcola la FdDC di un Paese country

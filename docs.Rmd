@@ -19,13 +19,13 @@ library(ggplot2)
 
 #---- DEFINIZIONE DEI PATH ----
 
-#pathGitProject_Gio = "C:/Users/user/Desktop/Magistrale/Statistica e Analisi dei Dati/SAD_Project"
-#setwd(pathGitProject_Gio)
-#source("Functions.R")
-
-pathGitProject_Ciro = "C:/Users/UTENTE/git/SAD_Project"
-setwd(pathGitProject_Ciro)
+pathGitProject_Gio = "C:/Users/user/Desktop/Magistrale/Statistica e Analisi dei Dati/SAD_Project"
+setwd(pathGitProject_Gio)
 source("Functions.R")
+
+#pathGitProject_Ciro = "C:/Users/UTENTE/git/SAD_Project"
+#setwd(pathGitProject_Ciro)
+#source("Functions.R")
 
 #---- CARICO I DATASET ----
 
@@ -269,27 +269,37 @@ V_indiciDisp
 ## Quantili (per dataset)
 
 ```{r quantili, echo=FALSE}
-par(mfrow=c(2, 2))
+par(mfrow=c(1, 2))
 
-f_quantili(1,D_dataset,V_dataset, "ALL")
-f_quantili(6,D_dataset,V_dataset, "ALL")
-f_quantili(11,D_dataset,V_dataset, "ALL")
-f_quantili(16,D_dataset,V_dataset, "ALL")
+f_quantili(1,D_dataset, "DPM - ALL")
+f_quantili(6,D_dataset, "DPM - ALL")
+f_quantili(11,D_dataset, "DPM - ALL")
+f_quantili(16,D_dataset, "DPM - ALL")
+f_quantili(21,D_dataset, "DPM - ALL")
 
-f_quantili(1,D_dataset15,V_dataset15, "LESS 15")
-f_quantili(6,D_dataset15,V_dataset15, "LESS 15")
-f_quantili(11,D_dataset15,V_dataset15, "LESS 15")
-f_quantili(16,D_dataset15,V_dataset15, "LESS 15")
+f_quantili(1,D_dataset15, "DPM - LESS 15")
+f_quantili(6,D_dataset15, "DPM - LESS 15")
+f_quantili(11,D_dataset15, "DPM - LESS 15")
+f_quantili(16,D_dataset15, "DPM - LESS 15")
+f_quantili(21,D_dataset15, "DPM - LESS 15")
 
-f_quantili(1,D_datasetComp,V_datasetComp, "COMP 15 - 64")
-f_quantili(6,D_datasetComp,V_datasetComp, "COMP 15 - 64")
-f_quantili(11,D_datasetComp,V_datasetComp, "COMP 15 - 64")
-f_quantili(16,D_datasetComp,V_datasetComp, "COMP 15 - 64")
+f_quantili(1,D_datasetComp, "DPM - COMP 15 - 64")
+f_quantili(6,D_datasetComp, "DPM - COMP 15 - 64")
+f_quantili(11,D_datasetComp, "DPM - COMP 15 - 64")
+f_quantili(16,D_datasetComp, "DPM - COMP 15 - 64")
+f_quantili(21,D_datasetComp, "DPM - COMP 15 - 64")
 
-f_quantili(1,D_dataset64,V_dataset64, "GREATER 64")
-f_quantili(6,D_dataset64,V_dataset64, "GREATER 64")
-f_quantili(11,D_dataset64,V_dataset64, "GREATER 64")
-f_quantili(16,D_dataset64,V_dataset64, "GREATER 64")
+f_quantili(1,D_dataset64, "DPM - GREATER 64")
+f_quantili(6,D_dataset64, "DPM - GREATER 64")
+f_quantili(11,D_dataset64, "DPM - GREATER 64")
+f_quantili(16,D_dataset64, "DPM - GREATER 64")
+f_quantili(21,D_dataset64, "DPM - GREATER 64")
+
+f_quantili(1,V_dataset, "VSL - ALL")
+f_quantili(6,V_dataset, "VSL - ALL")
+f_quantili(11,V_dataset, "VSL - ALL")
+f_quantili(16,V_dataset, "VSL - ALL")
+f_quantili(21,V_dataset, "VSL - ALL")
 
 par(mfrow=c(1, 1))
 ```
