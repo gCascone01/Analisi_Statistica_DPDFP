@@ -307,4 +307,5 @@ cor
 plot(d1,d2, col="red")
 model <- lm(d2~d1)
 abline(model, col="blue")
+summary(model)
 

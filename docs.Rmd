@@ -328,37 +328,39 @@ f_timeSeries(D_dataset, "DPM ALL")
 f_timeSeries(V_dataset, "VSL ALL")
 
 f_timeSeries(D_dataset15, "DPM LESS 15")
-f_timeSeries(V_dataset15, "VSL LESS 15")
-
 f_timeSeries(D_datasetComp, "DPM COMP 15 - 64")
-f_timeSeries(V_datasetComp, "VSL COMP 15 - 64")
-
 f_timeSeries(D_dataset64, "DPM GREATER 64")
-f_timeSeries(V_dataset64, "VSL GREATER 64")
-```
-
-## Suddivisione in Classi
-
-```{r suddivisione in classi, echo=FALSE}
-
-#---- SUDDIVISIONE IN CLASSI ----
-labels_classi = c("Very Low", "Low", "Medium", "High", "Very High")
-classi_D = c(D_min, D_min+(D_max-D_min)/n_countries, D_min+2*(D_max-D_min)/n_countries, 
-             D_min+3*(D_max-D_min)/n_countries, D_min+4*(D_max-D_min)/n_countries, D_max)
-classi_V = c(V_min, V_min+(V_max-V_min)/n_countries, V_min+2*(V_max-V_min)/n_countries, 
-             V_min+3*(V_max-V_min)/n_countries, V_min+4*(V_max-V_min)/n_countries, V_max)
 ```
 
 ### Grafico a Barre Sovrapposte per DPM (per country)
 
 ```{r grafico a barre sovrapposte DPM, echo=FALSE}
 
-# par(mfrow=c(2, 2))
+#par(mfrow=c(2,2))
 
 #---- GRAFICO A BARRE SOVRAPPOSTE ----
 for(country in countries){
   print(f_barre_sovrapp_per_eta(country,D_dataset15,D_datasetComp,D_dataset64,"DPM"))
 }
 
-# par(mfrow=c(1, 1))
+#par(mfrow=c(1, 1))
+```
+### Grafici di regressione
+
+```{r grafii di regressione, echo=FALSE}
+
+#---- GRAFICI DI REGRESSIONE ----
+for(country in countries){
+  print(f_regressione(V_dataset[country,],D_dataset[country,],country))
+}
+
+```
+
+```{r grafii di regressione, echo=FALSE}
+
+#---- GRAFICI DI REGRESSIONE ----
+for(country in countries){
+  print(f_residui(D_dataset[country,],V_dataset[country,],country))
+}
+
 ```

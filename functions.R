@@ -88,3 +88,30 @@ f_barre_sovrapp_per_eta = function(country, data_15, dataComp, data64, tipo){
     ggtitle(paste(tipo," per Classi di Età (1995 - 2015) - ",country, sep="")) + 
     theme(panel.background = element_blank(), axis.line = element_line(colour = "black"))
 }
+
+f_regressione = function(d1,d2,paese){
+  c_cor=cor(d1,d2)
+  if(c_cor<(-0.85) || c_cor>0.85){
+    plot(d1,d2, col="red")
+    model <- lm(d2~d1)
+    abline(model, col="blue")
+    stime <- fitted (model)
+    segments (d1, stime, d1, d2, col="magenta")
+  }else{
+    pol2 <- lm ( d2~d1 +I (( d1 ) ^2) )
+    alpha <- pol2$ coefficients [[1]]
+    beta <- pol2 $ coefficients [[2]]
+    gamma <- pol2$ coefficients [[3]]
+    plot ( d1 , d2 , col = " red " , main =paste("Scatterplot e Curva Stimata",paese,sep=" - "))
+    curve ( alpha + beta * x + gamma * x^2 , add = TRUE )
+    stime <- fitted (pol2)
+    segments (d1,stime,d1,d2,col="magenta")
+  }
+}
+
+f_residui = function(d1,d2,paese){
+  residui <- resid(lm(d2~d1))
+  plot (d2, residui, main = paste("Diagramma dei residui",paese,sep=" - "),
+           xlab = "VSL" , ylab ="Residui " , pch =9 , col =" red " )
+  abline ( h =0 , col =" blue " , lty =2)
+}
