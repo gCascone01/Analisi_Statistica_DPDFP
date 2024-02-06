@@ -23,9 +23,9 @@ pathGitProject_Gio = "C:/Users/user/Desktop/Magistrale/Statistica e Analisi dei 
 setwd(pathGitProject_Gio)
 source("Functions.R")
 
-#pathGitProject_Ciro = "C:/Users/UTENTE/git/SAD_Project"
-#setwd(pathGitProject_Ciro)
-#source("Functions.R")
+# pathGitProject_Ciro = "C:/Users/UTENTE/git/SAD_Project"
+# setwd(pathGitProject_Ciro)
+# source("Functions.R")
 
 #---- CARICO I DATASET ----
 
@@ -112,7 +112,7 @@ Librerie utilizzate: readxl, ggplot2.
 
 Caricamento dei dataset contenenti le variabili DPM e VSL per `r n_countries` paesi, suddivisi in fasce di età (minori di 15 anni, compresi tra 15 e 64 anni, maggiori di 64 anni). Preparazione dei dati: rimozione e formattazione righe e colonne, separazione delle variabili in dataset distinti.
 
-# Statistica Descrittiva Univariata
+# Statistica Descrittiva
 
 ```{r indici di centralità, echo=FALSE}
 #---- CALCOLO INDICI CENTRALITÀ ----
@@ -173,7 +173,7 @@ rownames(V_indiciCentr) = c("ALL","LESS 15","COMP 15 - 64","GREATER 64")
 ```
 ## Calcolo indici di Centralità (per dataset)
 
-Di seguito il calcolo degli indici di centralità per i dataset suddivisi per età e per variabili.
+Di seguito il calcolo degli indici di centralità per i dataset suddivisi per eta e per variabili.
 
 ### Indici di Centralità per DPM
 
@@ -251,7 +251,7 @@ rownames(V_indiciDisp) = c("ALL","LESS 15","COMP 15 - 64","GREATER 64")
 
 ## Calcolo indici di Dispersione (per dataset)
 
-Di seguito il calcolo degli indici di dispersione per i dataset suddivisi per età e per variabili.
+Di seguito il calcolo degli indici di dispersione per i dataset suddivisi per eta e per variabili.
 
 ### Indici di Dispersione per DPM
 
@@ -285,7 +285,6 @@ f_quantili(21,D_dataset15, "DPM - LESS 15")
 
 f_quantili(1,D_datasetComp, "DPM - COMP 15 - 64")
 f_quantili(6,D_datasetComp, "DPM - COMP 15 - 64")
-f_quantili(11,D_datasetComp, "DPM - COMP 15 - 64")
 f_quantili(16,D_datasetComp, "DPM - COMP 15 - 64")
 f_quantili(21,D_datasetComp, "DPM - COMP 15 - 64")
 
@@ -345,22 +344,825 @@ for(country in countries){
 
 #par(mfrow=c(1, 1))
 ```
+## Regressione
+
 ### Grafici di regressione
 
-```{r grafii di regressione, echo=FALSE}
+<!-- capire se ci sono schemi nei grafici dei residui: -->
+
+<!-- - LINEARE: NO -->
+
+<!-- PREVISIONE DATI FUTURI??????? -->
+
+<!-- ```{r grafii di regressione lineare, echo=FALSE} -->
+
+<!-- #---- GRAFICI DI REGRESSIONE LINEARE ---- -->
+
+<!-- # La regressione lineare è stata utilizzata per le variabili che presentano un coeff di correlazione < -0.85 e > 0.85 e per i modelli per cui risulta un coeff di determinazione > 0.7 -->
+
+<!-- regression_linear_c_cor_res = numeric() -->
+<!-- regression_linear_r_squared_res = numeric() -->
+<!-- regression_linear_resid_res = numeric() -->
+<!-- regression_non_linear_country = character() -->
+
+<!-- regression_linear_country = character() -->
+<!-- par(mfrow=c(1, 2)) -->
+<!-- for(country in countries) { -->
+<!--   results <- f_regressione_lineare(V_dataset[country,], D_dataset[country,], country, 0.7) -->
+
+<!--   if(!is.null(results)) { -->
+<!--     if(is.character(results)) { -->
+<!--       regression_non_linear_country <- c(regression_non_linear_country, results) -->
+<!--     } else { -->
+<!--       regression_linear_country <- c(regression_linear_country, country) -->
+
+<!--       regression_linear_c_cor_res <- c(regression_linear_c_cor_res, results[["c_cor"]]) -->
+<!--       regression_linear_r_squared_res <- c(regression_linear_r_squared_res, results[["r_squared"]]) -->
+
+<!--       regression_linear_resid_res <- c(regression_linear_resid_res, sum(results[["resid"]]^2)) -->
+<!--     } -->
+<!--   } -->
+<!-- } -->
+<!-- par(mfrow=c(1, 1)) -->
+
+
+<!-- res_reg_lin <- data.frame( -->
+<!--   cor = regression_linear_c_cor_res,  -->
+<!--   r_squared = regression_linear_r_squared_res,  -->
+<!--   resid = regression_linear_resid_res -->
+<!-- ) -->
+
+<!-- row.names(res_reg_lin) <- regression_linear_country -->
+
+<!-- res_reg_lin -->
+<!-- ``` -->
+
+```{r grafici di regressione, echo=FALSE}
 
 #---- GRAFICI DI REGRESSIONE ----
-for(country in countries){
-  print(f_regressione(V_dataset[country,],D_dataset[country,],country))
+
+
+par(mfrow=c(1, 2))
+
+reg_non_lin_best_model <- character()
+reg_non_lin_best_r_squared <- numeric()
+reg_non_lin_best_resid <- numeric()
+
+summary_models <- data.frame(best_model=character(), c_cor=numeric(), lin = numeric(), quad = numeric(), exp = numeric(), semilog = numeric(), log = numeric(), stringsAsFactors = FALSE)
+
+for(country in countries) {
+  results <- best_model_function(V_dataset[country, ], D_dataset[country, ], country)
+  
+  reg_non_lin_best_model <- c(reg_non_lin_best_model, results$model)
+  reg_non_lin_best_r_squared <- c(reg_non_lin_best_r_squared, results$r_squared)
+  reg_non_lin_best_resid <- c(reg_non_lin_best_resid, results$resid)
+  
+  summary_models <- rbind(summary_models, results$summary)
 }
+
+row.names(summary_models) <- countries
+
+par(mfrow=c(1, 1))
+
+res_reg_non_lin <- data.frame(
+  model = reg_non_lin_best_model,
+  r_squared = reg_non_lin_best_r_squared, 
+  resid = reg_non_lin_best_resid
+)
+
+# row.names(res_reg_non_lin) <- regression_non_linear_country
+
+summary_models
+```
+## Clustering
+
+```{r clustering setup VSL, echo=FALSE}
+
+### DOMANDE
+
+# algoritmo di enumerazione completa?
+# scale anche se è una sola var?
+# elbow point?
+
+#---- SETUP ----
+
+# MATRICE DELLE DISTANZE
+
+V_distance <- dist(V_dataset, method="euclidean")
+
+# MATRICE DI NON OMOGENEITÀ TOTALE
+
+V_WI <- cov(V_dataset)
+
+# MATRICE STATISTICA DI NON OMOGENEITÀ TOTALE
+
+V_n <- length(V_dataset)
+
+V_HI <- (V_n-1)*V_WI
+
+# TRACCIA DI HI
+
+V_trHI <- sum(diag(V_HI))
 
 ```
 
-```{r grafii di regressione, echo=FALSE}
+### Metodi gerarchici VSL
 
-#---- GRAFICI DI REGRESSIONE ----
-for(country in countries){
-  print(f_residui(D_dataset[country,],V_dataset[country,],country))
+#### Metodo del legame singolo
+
+```{r clustering metodi gerarchici - legame singolo VSL, echo=FALSE}
+
+#---- METODI GERARCHICI ----
+
+#---- METODO DEL LEGAME SINGOLO ----
+
+num_clusters <- 2:8
+hls <- hclust(V_distance, method="single")
+
+# Dendogramma
+  
+plot(hls, hang=-1, xlab=paste("VSL - Metodo gerarchico agglomerativo"), sub=paste("del legame singolo"))
+axis(side=4, at=round(c(0, hls$height), 2))
+
+# Screeplot
+
+plot(c(0, hls$height), seq(n_countries,1), type="b", main="Screeplot", xlab="Distanza di aggregazione", ylab="Numero di cluster", col="red")
+
+# Da 1 a 2 risulta il salto maggiore, quindi sembra esser il miglior, secondo questa procedura EMPIRICA, l'utilizzo di 2 cluster, c'è un ulteriore salto lungo anche da 2 a 3, quindi proveremo anche per 3, fino a 8.
+
+trH_within_values <- numeric(length(num_clusters))
+trH_between_values <- numeric(length(num_clusters))
+
+for(i in num_clusters){
+  n_clust <- i
+  V_trH_average_results <- hierarchClustering(hls, n_clust, V_dataset, "del legame singolo", V_trHI, "VSL")
+  
+  trH_within_values[i-1] <- V_trH_average_results[["trH_within"]]
+  trH_between_values[i-1] <- V_trH_average_results[["trH_between"]]
 }
 
+plot(num_clusters, trH_within_values, type="b", xlab="Numero di Cluster", ylab="Non Omogeneità (trH_within)", main="Analisi del Numero Ottimale di Cluster")
+plot(num_clusters, trH_between_values, type="b", xlab="Numero di Cluster", ylab="Non Omogeneità (trH_between)", main="Analisi del Numero Ottimale di Cluster")
+
+
+# Sia graficamente, che analizzando le misure di non omogeneità between e within e guardando i grafici visualizzati precedentemente (quindi punto di gomito), il numero di cluster k=4 sembra il più adatto ai nostri dati
+
+
+
 ```
+
+#### Metodo del legame completo
+
+```{r clustering metodi gerarchici - legame completo VSL, echo=FALSE}
+
+#---- METODI GERARCHICI ----
+
+#---- METODO DEL LEGAME COMPLETO ----
+num_clusters <- 2:8
+hls <- hclust(V_distance, method="complete")
+
+# Dendogramma
+  
+plot(hls, hang=-1, xlab=paste("VSL - Metodo gerarchico agglomerativo"), sub=paste("del legame completo"))
+axis(side=4, at=round(c(0, hls$height), 2))
+
+# Screeplot
+
+plot(c(0, hls$height), seq(n_countries,1), type="b", main="Screeplot", xlab="Distanza di aggregazione", ylab="Numero di cluster", col="red")
+
+# Da 1 a 2 risulta il salto maggiore, quindi sembra esser il miglior, secondo questa procedura EMPIRICA, l'utilizzo di 2 cluster, c'è un ulteriore salto lungo anche da 2 a 3, quindi proveremo anche per 3, fino a 8.
+
+trH_within_values <- numeric(length(num_clusters))
+trH_between_values <- numeric(length(num_clusters))
+
+for(i in num_clusters){
+  n_clust <- i
+  V_trH_average_results <- hierarchClustering(hls, n_clust, V_dataset, "del legame completo", V_trHI, "VSL")
+  
+  trH_within_values[i-1] <- V_trH_average_results[["trH_within"]]
+  trH_between_values[i-1] <- V_trH_average_results[["trH_between"]]
+}
+
+plot(num_clusters, trH_within_values, type="b", xlab="Numero di Cluster", ylab="Non Omogeneità (trH_within)", main="Analisi del Numero Ottimale di Cluster")
+plot(num_clusters, trH_between_values, type="b", xlab="Numero di Cluster", ylab="Non Omogeneità (trH_between)", main="Analisi del Numero Ottimale di Cluster")
+
+
+# Sia graficamente, che analizzando le misure di non omogeneità between e within e guardando i grafici visualizzati precedentemente (quindi punto di gomito), il numero di cluster k=4 sembra il più adatto ai nostri dati... Forse essendo il salto maggiore verso 3, questo metodo suggerisce k=4, ma non ne sono sicuro, son più confident di 4.
+
+
+
+```
+
+#### Metodo del legame medio
+
+```{r clustering metodi gerarchici - legame medio VSL, echo=FALSE}
+
+#---- METODI GERARCHICI ----
+
+#---- METODO DEL LEGAME MEDIO ----
+num_clusters <- 2:8
+hls <- hclust(V_distance, method="average")
+
+# Dendogramma
+  
+plot(hls, hang=-1, xlab=paste("VSL - Metodo gerarchico agglomerativo"), sub=paste("del legame medio"))
+axis(side=4, at=round(c(0, hls$height), 2))
+
+# Screeplot
+
+plot(c(0, hls$height), seq(n_countries,1), type="b", main="Screeplot", xlab="Distanza di aggregazione", ylab="Numero di cluster", col="red")
+
+# Da 1 a 2 risulta il salto maggiore, quindi sembra esser il miglior, secondo questa procedura EMPIRICA, l'utilizzo di 2 cluster, c'è un ulteriore salto lungo anche da 2 a 3, quindi proveremo anche per 3, fino a 8.
+
+trH_within_values <- numeric(length(num_clusters))
+trH_between_values <- numeric(length(num_clusters))
+
+for(i in num_clusters){
+  n_clust <- i
+  V_trH_average_results <- hierarchClustering(hls, n_clust, V_dataset, "del legame medio", V_trHI, "VSL")
+  
+  trH_within_values[i-1] <- V_trH_average_results[["trH_within"]]
+  trH_between_values[i-1] <- V_trH_average_results[["trH_between"]]
+}
+
+plot(num_clusters, trH_within_values, type="b", xlab="Numero di Cluster", ylab="Non Omogeneità (trH_within)", main="Analisi del Numero Ottimale di Cluster")
+plot(num_clusters, trH_between_values, type="b", xlab="Numero di Cluster", ylab="Non Omogeneità (trH_between)", main="Analisi del Numero Ottimale di Cluster")
+
+
+# Sia graficamente, che analizzando le misure di non omogeneità between e within e guardando i grafici visualizzati precedentemente (quindi punto di gomito), il numero di cluster k=4 sembra il più adatto ai nostri dati... Forse essendo il salto maggiore verso 3, questo metodo suggerisce k=4, ma non ne sono sicuro, son più confident di 4.
+
+
+
+```
+
+#### Metodo del centroide
+
+```{r clustering metodi gerarchici - centroide VSL, echo=FALSE}
+
+#---- METODI GERARCHICI ----
+
+#---- METODO DEL CENTROIDE ----
+num_clusters <- 2:8
+V_distance2 <- V_distance^2
+hls <- hclust(V_distance2, method="centroid")
+
+# Dendogramma
+  
+plot(hls, hang=-1, xlab=paste("VSL - Metodo gerarchico agglomerativo"), sub=paste("del centroide"))
+axis(side=4, at=round(c(0, hls$height), 2))
+
+# Screeplot
+
+plot(c(0, hls$height), seq(n_countries,1), type="b", main="Screeplot", xlab="Distanza di aggregazione", ylab="Numero di cluster", col="red")
+
+# Da 1 a 2 risulta il salto maggiore, quindi sembra esser il miglior, secondo questa procedura EMPIRICA, l'utilizzo di 2 cluster, c'è un ulteriore salto lungo anche da 2 a 3, quindi proveremo anche per 3, fino a 8.
+
+trH_within_values <- numeric(length(num_clusters))
+trH_between_values <- numeric(length(num_clusters))
+
+for(i in num_clusters){
+  n_clust <- i
+  V_trH_average_results <- hierarchClustering(hls, n_clust, V_dataset, "del centroide", V_trHI, "VSL")
+  
+  trH_within_values[i-1] <- V_trH_average_results[["trH_within"]]
+  trH_between_values[i-1] <- V_trH_average_results[["trH_between"]]
+}
+
+plot(num_clusters, trH_within_values, type="b", xlab="Numero di Cluster", ylab="Non Omogeneità (trH_within)", main="Analisi del Numero Ottimale di Cluster")
+plot(num_clusters, trH_between_values, type="b", xlab="Numero di Cluster", ylab="Non Omogeneità (trH_between)", main="Analisi del Numero Ottimale di Cluster")
+
+
+# Sia graficamente, che analizzando le misure di non omogeneità between e within e guardando i grafici visualizzati precedentemente (quindi punto di gomito), il numero di cluster k=4 sembra il più adatto ai nostri dati... Forse essendo il salto maggiore verso 3, questo metodo suggerisce k=4, ma non ne sono sicuro, son più confident di 4.
+
+
+
+```
+
+
+#### Metodo della mediana
+
+```{r clustering metodi gerarchici - mediana VSL, echo=FALSE}
+
+#---- METODI GERARCHICI ----
+
+#---- METODO DELLA MEDIANA ----
+num_clusters <- 2:8
+V_distance2 <- V_distance^2
+hls <- hclust(V_distance2, method="median")
+
+# Dendogramma
+
+plot(hls, hang=-1, xlab=paste("VSL - Metodo gerarchico agglomerativo"), sub=paste("della mediana"))
+axis(side=4, at=round(c(0, hls$height), 2))
+
+# Screeplot
+
+plot(c(0, hls$height), seq(n_countries,1), type="b", main="Screeplot", xlab="Distanza di aggregazione", ylab="Numero di cluster", col="red")
+
+# Da 1 a 2 risulta il salto maggiore, quindi sembra esser il miglior, secondo questa procedura EMPIRICA, l'utilizzo di 2 cluster, c'è un ulteriore salto lungo anche da 2 a 3, quindi proveremo anche per 3, fino a 8.
+
+trH_within_values <- numeric(length(num_clusters))
+trH_between_values <- numeric(length(num_clusters))
+
+for(i in num_clusters){
+  n_clust <- i
+  V_trH_average_results <- hierarchClustering(hls, n_clust, V_dataset, "della mediana", V_trHI, "VSL")
+  
+  trH_within_values[i-1] <- V_trH_average_results[["trH_within"]]
+  trH_between_values[i-1] <- V_trH_average_results[["trH_between"]]
+}
+
+plot(num_clusters, trH_within_values, type="b", xlab="Numero di Cluster", ylab="Non Omogeneità (trH_within)", main="Analisi del Numero Ottimale di Cluster")
+plot(num_clusters, trH_between_values, type="b", xlab="Numero di Cluster", ylab="Non Omogeneità (trH_between)", main="Analisi del Numero Ottimale di Cluster")
+
+
+# Sia graficamente, che analizzando le misure di non omogeneità between e within e guardando i grafici visualizzati precedentemente (quindi punto di gomito), il numero di cluster k=4 sembra il più adatto ai nostri dati... Forse essendo il salto maggiore verso 3, questo metodo suggerisce k=4, ma non ne sono sicuro, son più confident di 4.
+
+
+
+```
+
+### Metodi non gerarchici VSL
+
+#### Metodo kmeans
+
+```{r clustering metodi non gerarchici - kmeans VSL, echo=FALSE}
+
+#---- METODI NON GERARCHICI ----
+
+#---- METODO KMEANS ----
+n_clust = 3:5
+for(i in n_clust){
+  V_km <- kMeansClustering(V_dataset, i, 5, 10, "VSL")
+
+  V_trH_km_within <- V_km[["trH_within"]]
+  
+  V_trH_km_between <- V_km[["trH_between"]]
+  
+  V_km_clusters <- V_km[["clusters"]]
+}
+
+
+
+# Sia graficamente, che analizzando le misure di non omogeneità between e within e guardando i grafici visualizzati precedentemente (quindi punto di gomito), il numero di cluster k=4 sembra il più adatto ai nostri dati... Forse essendo il salto maggiore verso 3, questo metodo suggerisce k=4, ma non ne sono sicuro, son più confident di 4.
+
+
+
+```
+
+```{r clustering setup DPM, echo=FALSE}
+
+### DOMANDE
+
+# algoritmo di enumerazione completa?
+
+#---- SETUP ----
+
+# MATRICE DELLE DISTANZE
+
+D_distance <- dist(D_dataset, method="euclidean")
+
+# MATRICE DI NON OMOGENEITÀ TOTALE
+
+D_WI <- cov(D_dataset)
+
+# MATRICE STATISTICA DI NON OMOGENEITÀ TOTALE
+
+D_n <- length(D_dataset)
+
+D_HI <- (D_n-1)*D_WI
+
+# TRACCIA DI HI
+
+D_trHI <- sum(diag(D_HI))
+
+```
+
+### Metodi gerarchici DPM
+
+#### Metodo del legame singolo
+
+```{r clustering metodi gerarchici - legame singolo DPM, echo=FALSE}
+
+#---- METODI GERARCHICI ----
+
+#---- METODO DEL LEGAME SINGOLO ----
+
+num_clusters <- 2:10
+hls <- hclust(D_distance, method="single")
+
+# Dendogramma
+  
+plot(hls, hang=-1, xlab=paste("DPM - Metodo gerarchico agglomerativo"), sub=paste("del legame singolo"))
+axis(side=4, at=round(c(0, hls$height), 2))
+
+# Screeplot
+
+plot(c(0, hls$height), seq(n_countries,1), type="b", main="Screeplot", xlab="Distanza di aggregazione", ylab="Numero di cluster", col="red")
+
+#
+
+trH_within_values <- numeric(length(num_clusters))
+trH_between_values <- numeric(length(num_clusters))
+
+for(i in num_clusters){
+  n_clust <- i
+  D_trH_average_results <- hierarchClustering(hls, n_clust, D_dataset, "del legame singolo", D_trHI, "DPM")
+  
+  trH_within_values[i-1] <- D_trH_average_results[["trH_within"]]
+  trH_between_values[i-1] <- D_trH_average_results[["trH_between"]]
+}
+
+plot(num_clusters, trH_within_values, type="b", xlab="Numero di Cluster", ylab="Non Omogeneità (trH_within)", main="Analisi del Numero Ottimale di Cluster")
+plot(num_clusters, trH_between_values, type="b", xlab="Numero di Cluster", ylab="Non Omogeneità (trH_between)", main="Analisi del Numero Ottimale di Cluster")
+
+
+#
+
+
+
+```
+
+#### Metodo del legame completo
+
+```{r clustering metodi gerarchici - legame completo DPM, echo=FALSE}
+
+#---- METODI GERARCHICI ----
+
+#---- METODO DEL LEGAME COMPLETO ----
+num_clusters <- 2:10
+hls <- hclust(D_distance, method="complete")
+
+# Dendogramma
+  
+plot(hls, hang=-1, xlab=paste("DPM - Metodo gerarchico agglomerativo"), sub=paste("del legame completo"))
+axis(side=4, at=round(c(0, hls$height), 2))
+
+# Screeplot
+
+plot(c(0, hls$height), seq(n_countries,1), type="b", main="Screeplot", xlab="Distanza di aggregazione", ylab="Numero di cluster", col="red")
+
+#
+
+trH_within_values <- numeric(length(num_clusters))
+trH_between_values <- numeric(length(num_clusters))
+
+for(i in num_clusters){
+  n_clust <- i
+  D_trH_average_results <- hierarchClustering(hls, n_clust, D_dataset, "del legame completo", D_trHI, "DPM")
+  
+  trH_within_values[i-1] <- D_trH_average_results[["trH_within"]]
+  trH_between_values[i-1] <- D_trH_average_results[["trH_between"]]
+}
+
+plot(num_clusters, trH_within_values, type="b", xlab="Numero di Cluster", ylab="Non Omogeneità (trH_within)", main="Analisi del Numero Ottimale di Cluster")
+plot(num_clusters, trH_between_values, type="b", xlab="Numero di Cluster", ylab="Non Omogeneità (trH_between)", main="Analisi del Numero Ottimale di Cluster")
+
+
+#
+
+
+
+```
+
+#### Metodo del legame medio
+
+```{r clustering metodi gerarchici - legame medio DPM, echo=FALSE}
+
+#---- METODI GERARCHICI ----
+
+#---- METODO DEL LEGAME MEDIO ----
+num_clusters <- 2:10
+hls <- hclust(D_distance, method="average")
+
+# Dendogramma
+  
+plot(hls, hang=-1, xlab=paste("DPM - Metodo gerarchico agglomerativo"), sub=paste("del legame medio"))
+axis(side=4, at=round(c(0, hls$height), 2))
+
+# Screeplot
+
+plot(c(0, hls$height), seq(n_countries,1), type="b", main="Screeplot", xlab="Distanza di aggregazione", ylab="Numero di cluster", col="red")
+
+#
+
+trH_within_values <- numeric(length(num_clusters))
+trH_between_values <- numeric(length(num_clusters))
+
+for(i in num_clusters){
+  n_clust <- i
+  D_trH_average_results <- hierarchClustering(hls, n_clust, D_dataset, "del legame medio", D_trHI, "DPM")
+  
+  trH_within_values[i-1] <- D_trH_average_results[["trH_within"]]
+  trH_between_values[i-1] <- D_trH_average_results[["trH_between"]]
+}
+
+plot(num_clusters, trH_within_values, type="b", xlab="Numero di Cluster", ylab="Non Omogeneità (trH_within)", main="Analisi del Numero Ottimale di Cluster")
+plot(num_clusters, trH_between_values, type="b", xlab="Numero di Cluster", ylab="Non Omogeneità (trH_between)", main="Analisi del Numero Ottimale di Cluster")
+
+
+# 
+
+
+
+```
+
+#### Metodo del centroide
+
+```{r clustering metodi gerarchici - centroide DPM, echo=FALSE}
+
+#---- METODI GERARCHICI ----
+
+#---- METODO DEL CENTROIDE ----
+num_clusters <- 2:10
+D_distance2 <- D_distance^2
+hls <- hclust(D_distance2, method="centroid")
+
+# Dendogramma
+  
+plot(hls, hang=-1, xlab=paste("DPM - Metodo gerarchico agglomerativo"), sub=paste("del centroide"))
+axis(side=4, at=round(c(0, hls$height), 2))
+
+# Screeplot
+
+plot(c(0, hls$height), seq(n_countries,1), type="b", main="Screeplot", xlab="Distanza di aggregazione", ylab="Numero di cluster", col="red")
+
+#
+
+trH_within_values <- numeric(length(num_clusters))
+trH_between_values <- numeric(length(num_clusters))
+
+for(i in num_clusters){
+  n_clust <- i
+  D_trH_average_results <- hierarchClustering(hls, n_clust, D_dataset, "del centroide", D_trHI, "DPM")
+  
+  trH_within_values[i-1] <- D_trH_average_results[["trH_within"]]
+  trH_between_values[i-1] <- D_trH_average_results[["trH_between"]]
+}
+
+plot(num_clusters, trH_within_values, type="b", xlab="Numero di Cluster", ylab="Non Omogeneità (trH_within)", main="Analisi del Numero Ottimale di Cluster")
+plot(num_clusters, trH_between_values, type="b", xlab="Numero di Cluster", ylab="Non Omogeneità (trH_between)", main="Analisi del Numero Ottimale di Cluster")
+
+
+#
+
+
+```
+
+
+#### Metodo della mediana
+
+```{r clustering metodi gerarchici - mediana DPM, echo=FALSE}
+
+#---- METODI GERARCHICI ----
+
+#---- METODO DELLA MEDIANA ----
+num_clusters <- 2:10
+D_distance2 <- D_distance^2
+hls <- hclust(D_distance2, method="median")
+
+# Dendogramma
+
+plot(hls, hang=-1, xlab=paste("DPM - Metodo gerarchico agglomerativo"), sub=paste("della mediana"))
+axis(side=4, at=round(c(0, hls$height), 2))
+
+# Screeplot
+
+plot(c(0, hls$height), seq(n_countries,1), type="b", main="Screeplot", xlab="Distanza di aggregazione", ylab="Numero di cluster", col="red")
+
+#
+
+trH_within_values <- numeric(length(num_clusters))
+trH_between_values <- numeric(length(num_clusters))
+
+for(i in num_clusters){
+  n_clust <- i
+  D_trH_average_results <- hierarchClustering(hls, n_clust, D_dataset, "della mediana", D_trHI, "DPM")
+  
+  trH_within_values[i-1] <- D_trH_average_results[["trH_within"]]
+  trH_between_values[i-1] <- D_trH_average_results[["trH_between"]]
+}
+
+plot(num_clusters, trH_within_values, type="b", xlab="Numero di Cluster", ylab="Non Omogeneità (trH_within)", main="Analisi del Numero Ottimale di Cluster")
+plot(num_clusters, trH_between_values, type="b", xlab="Numero di Cluster", ylab="Non Omogeneità (trH_between)", main="Analisi del Numero Ottimale di Cluster")
+
+
+#
+
+
+```
+
+### Metodi non gerarchici DPM
+
+#### Metodo kmeans
+
+```{r clustering metodi non gerarchici - kmeans DPM, echo=FALSE}
+
+#---- METODI NON GERARCHICI ----
+
+#---- METODO KMEANS ----
+n_clust = 6:8
+for(i in n_clust){
+  D_km <- kMeansClustering(D_dataset, i, 5, 10, "DPM")
+
+  D_trH_km_within <- D_km[["trH_within"]]
+  
+  D_trH_km_between <- D_km[["trH_between"]]
+  
+  D_km_clusters <- D_km[["clusters"]]
+}
+
+
+
+# n_clust = 4
+# D_km <- kMeansClustering(D_dataset, n_clust, 5, 10)
+# 
+# D_trH_km_within <- D_km[["trH_within"]]
+# 
+# D_trH_km_between <- D_km[["trH_between"]]
+# 
+# D_km_clusters <- D_km[["clusters"]]
+# 
+# 
+# n_clust = 5
+# D_km <- kMeansClustering(D_dataset, n_clust, 5, 10)
+# 
+# D_trH_km_within <- D_km[["trH_within"]]
+# 
+# D_trH_km_between <- D_km[["trH_between"]]
+# 
+# D_km_clusters <- D_km[["clusters"]]
+
+
+
+#
+
+
+
+```
+## Parte finale
+
+### Chi2
+
+Dato l'output:
+
+Il valore calcolato del test chi quadrato (chi2) è 4.75.
+Il quantile inferiore della distribuzione chi quadrato è 0.05063562.
+Il quantile superiore della distribuzione chi quadrato è 7.377759.
+
+Poiché il valore calcolato di 4.75 è compreso tra i due quantili (0.05063562 e 7.377759), non rifiutiamo l'ipotesi nulla. In altre parole, non abbiamo prove sufficienti per affermare che i dati non seguano la distribuzione normale specificata.
+
+In sintesi, sulla base di questo test, i dati delle rilevazioni di DPM per l'Italia non mostrano significative deviazioni dalla normalità, secondo il livello di significatività scelto (α = 0.05).
+```{r metodo chi quadrato, echo=FALSE}
+
+
+# results <- apply(D_dataset, 2, function(column) {
+#     # Definire le categorie (bins)
+#     bins <- seq(min(column), max(column), length.out = 10)
+#     
+#     # Calcolare le frequenze osservate
+#     observed <- hist(column, breaks = bins, plot = FALSE)$counts
+#     
+#     # Calcolare le frequenze attese
+#     expected <- dnorm(bins, mean = mean(column), sd = sd(column)) * length(column) * diff(bins[1:2])
+#     
+#     # Eseguire il test del chi quadrato
+#     chisq.test(x = observed, p = expected, rescale.p = TRUE)
+# })
+# 
+# # Visualizzare i risultati
+# print(results)
+
+D_Italia <- as.vector(D_dataset["Italia",])
+n_Italia = length(D_Italia)
+
+mean_Italia <- mean(D_Italia)
+
+sd_Italia <- sd(D_Italia)
+
+a <- numeric(4)
+
+for(i in 1:4){
+  a[i] <- qnorm(0.2*i, mean=mean_Italia, sd=sd_Italia)
+}
+
+r <- 5
+
+nint <- numeric(r)
+nint [1] <- length(which(D_Italia < a [1]) )
+for(i in 2:4) {
+  nint[i] <- length(which((D_Italia >= a[i-1]) & D_Italia < a[i]))
+}
+nint[5] <- length ( which ( D_Italia >= a [4]) )
+
+chi2 <- sum ((( nint - n_Italia* 0.2) / sqrt ( n_Italia* 0.2) ) ^2)
+
+# r num di elementi per ogni intervallo di frequenze (per ogni cella)
+r <-5
+# k num di parametri non noti
+k <-2
+# r - k -1 gradi di libertà
+alpha <- 0.05
+
+qchisq ( alpha /2, df =r -k -1)
+
+qchisq ( 1-alpha /2, df =r -k -1)
+
+# Avendo denotato che la distribuzione è normale, possiamo eseguire i seguenti passi trattando la popolazione come normale
+
+# --- STIMA PUNTUALE ---
+
+# VALORE STIMATO PER IL PARAMETRO µ
+stimamu <- mean ( D_Italia )
+stimamu
+
+# VALORE STIMATO PER IL PARAMETRO σ^2
+stimasigma2 <-( length ( D_Italia ) -1) * var ( D_Italia )/ length ( D_Italia )
+stimasigma2
+
+# --- INTERVALLI DI CONFIDENZA ---
+
+alpha = 0.05
+
+# µ con σ^2 NOTA
+
+qnorm = qnorm (1 - alpha / 2, mean =0 , sd =1)
+qnorm
+
+mean(D_Italia) - qnorm * sd_Italia/sqrt(n_Italia)
+mean(D_Italia) + qnorm * sd_Italia/sqrt(n_Italia)
+
+# µ con σ^2 NON NOTA
+
+qt = qt (1 - alpha /2, df =n_Italia -1)
+qt
+
+mean_Italia - qt * sd_Italia / sqrt(n_Italia)
+mean_Italia + qt * sd_Italia / sqrt(n_Italia)
+
+# σ^2 con µ NOTA
+
+# Supponiamo mu = 151 (in quanto la media è 151.x)
+
+mu = 151
+
+q1 = qchisq (alpha/2, df=n_Italia)
+q2 = qchisq(1-alpha/2, df=n_Italia)
+q1
+q2
+
+((n_Italia-1)*var(D_Italia) + n_Italia*(mean_Italia-mu)**2)/q2
+((n_Italia-1)*var(D_Italia) + n_Italia*(mean_Italia-mu)**2)/q1
+
+# σ^2 con µ NON NOTA
+
+q1 = qchisq ( alpha / 2, df =n_Italia -1)
+q2 = qchisq ( 1- alpha / 2, df =n_Italia -1)
+
+(n_Italia-1)*var(D_Italia)/q2
+(n_Italia-1)*var(D_Italia)/q1
+
+# --- CONFRONTO TRA DUE POPOLAZIONI (NORMALI) ---
+
+# Verifichiamo che la seconda popolazione sia normale con il test del chiquadro
+
+D_Francia <- as.vector(D_dataset["Francia",])
+n_Francia = length(D_Francia)
+
+mean_Francia <- mean(D_Francia)
+
+sd_Francia <- sd(D_Francia)
+
+a <- numeric(4)
+
+for(i in 1:4){
+  a[i] <- qnorm(0.2*i, mean=mean_Francia, sd=sd_Francia)
+}
+
+r <- 5
+
+nint <- numeric(r)
+nint [1] <- length(which(D_Francia < a [1]) )
+for(i in 2:4) {
+  nint[i] <- length(which((D_Francia >= a[i-1]) & D_Francia < a[i]))
+}
+nint[5] <- length ( which ( D_Francia >= a [4]) )
+
+chi2 <- sum ((( nint - n_Francia* 0.2) / sqrt ( n_Francia* 0.2) ) ^2)
+chi2
+
+# r num di elementi per ogni intervallo di frequenze (per ogni cella)
+r <-5
+# k num di parametri non noti
+k <-2
+# r - k -1 gradi di libertà
+alpha <- 0.05
+
+qchisq ( alpha /2, df =r -k -1)
+
+qchisq ( 1-alpha /2, df =r -k -1)
+
+# chi2 compreso --> ipotesi valida --> popolazione normale. Possiamo procedere col confronto
+
+```
+

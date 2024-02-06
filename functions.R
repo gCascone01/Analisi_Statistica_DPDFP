@@ -89,29 +89,150 @@ f_barre_sovrapp_per_eta = function(country, data_15, dataComp, data64, tipo){
     theme(panel.background = element_blank(), axis.line = element_line(colour = "black"))
 }
 
-f_regressione = function(d1,d2,paese){
+f_regressione_lineare = function(d1,d2,paese,offset){
   c_cor=cor(d1,d2)
-  if(c_cor<(-0.85) || c_cor>0.85){
-    plot(d1,d2, col="red")
-    model <- lm(d2~d1)
+  
+  model <- lm(d2~d1)
+  
+  if(summary(model)$r.squared > offset && (c_cor<(-0.85) || c_cor>0.85)) {
+    plot(d1,d2, col="red", main =paste("Scatterplot e Curva Stimata",paese,sep=" - "))
     abline(model, col="blue")
     stime <- fitted (model)
     segments (d1, stime, d1, d2, col="magenta")
-  }else{
-    pol2 <- lm ( d2~d1 +I (( d1 ) ^2) )
-    alpha <- pol2$ coefficients [[1]]
-    beta <- pol2 $ coefficients [[2]]
-    gamma <- pol2$ coefficients [[3]]
-    plot ( d1 , d2 , col = " red " , main =paste("Scatterplot e Curva Stimata",paese,sep=" - "))
-    curve ( alpha + beta * x + gamma * x^2 , add = TRUE )
-    stime <- fitted (pol2)
-    segments (d1,stime,d1,d2,col="magenta")
+    
+    summary <- summary(model)
+    # print(paese)
+    # print(summary$r.squared)
+    # print(c_cor)
+    
+    residui <- resid(model)
+    plot (d2, residui, main = paste("Diagramma dei residui",paese,sep=" - "),
+          xlab = "VSL" , ylab ="Residui " , pch =9 , col =" red " )
+    abline ( h =0 , col =" blue " , lty =2)
+    # print(residui)
+    
+    return(list(c_cor=c_cor, r_squared=summary$r.squared, summary=summary, resid = residui))
+  } else {
+    return(paese)
   }
 }
 
-f_residui = function(d1,d2,paese){
-  residui <- resid(lm(d2~d1))
-  plot (d2, residui, main = paste("Diagramma dei residui",paese,sep=" - "),
-           xlab = "VSL" , ylab ="Residui " , pch =9 , col =" red " )
-  abline ( h =0 , col =" blue " , lty =2)
+best_model_function <- function(d1, d2, paese) {
+  
+  # Definizione modelli di regressione studiati
+  models <- list(
+    lin = lm(d2 ~ d1),
+    quad = lm(d2 ~ d1 + I(d1^2)),
+    exp = lm(d2 ~ I(exp(d1))),
+    semilog = lm(I(log(d2)) ~ d1),
+    log = lm(I(log(d2)) ~ I(log(d1)))
+  )
+  
+  best_model <- NULL
+  best_r_squared <- -Inf
+  
+  temp_r_squared <- numeric(length(models))
+  
+  c_cor <- cor(d1, d2)
+  
+  for (model_name in names(models)) {
+    model <- models[[model_name]]
+    
+    r_squared <- summary(model)$r.squared
+    
+    temp_r_squared[which(names(models) == model_name)] <- r_squared
+    
+    if (r_squared > best_r_squared) {
+      best_r_squared <- r_squared
+      best_model <- model
+      best_model_name <- model_name
+    }
+  }
+  
+  
+  # Plot dei dati e della curva stimata
+  plot(d1, d2, col="red", main=paste("Scatterplot e Curva Stimata -", paese, "(", best_model_name, ")", "-", r_squared, sep=" "))
+  switch(
+    best_model_name,
+    "lin" = abline(best_model, col="blue"),
+    "quad" = curve(best_model$coefficients[[1]] + best_model$coefficients[[2]] * x + best_model$coefficients[[3]] * x^2, add=TRUE, col="blue"),
+    "exp" = curve(best_model$coefficients[[1]] * exp(best_model$coefficients[[2]] * x), add=TRUE, col="blue"),
+    "semilog" = curve(exp(best_model$coefficients[[1]] + best_model$coefficients[[2]] * x), add=TRUE, col="blue"),
+    "log" = curve(exp(best_model$coefficients[[1]] + best_model$coefficients[[2]] * log(x)), add=TRUE, col="blue")
+  )
+  
+  switch(
+    best_model_name,
+    "lin" = segments(d1, fitted(best_model), d1, d2, col="magenta"),
+    "quad" = segments(d1, best_model$coefficients[[1]] + best_model$coefficients[[2]] * d1 + best_model$coefficients[[3]] * (d1)^2, d1, d2, col="magenta"),
+    "exp" = segments(d1, best_model$coefficients[[1]] + best_model$coefficients[[2]] * exp (d1) , d1, d2, col="magenta"),
+    "semilog" = segments(d1, exp(best_model$coefficients[[1]] + best_model$coefficients[[2]] * d1), d1, d2, col="magenta"),
+    "log" = stime <- segments(d1, best_model$coefficients[[1]]*((d1)^ best_model$coefficients[[2]] ), d1, d2, col="magenta")
+  )
+  
+  # Plot dei residui
+  residui <- resid(best_model)
+  plot(d2, residui, main=paste("Diagramma dei residui -", paese), xlab="Valori previsti", ylab="Residui", pch=19, col="red")
+  abline(h=0, col="blue", lty=2)
+  
+  # Restituzione dei risultati
+  return(list(
+    model = best_model_name,
+    r_squared = best_r_squared,
+    # summary = summary(best_model),
+    resid = residui,
+    summary = data.frame(best_model=best_model_name, c_cor=c_cor, lin = temp_r_squared[1], quad = temp_r_squared[2], exp = temp_r_squared[3], semilog = temp_r_squared[4], log = temp_r_squared[5])
+  ))
+}
+
+
+
+# f_residui = function(d1,d2,paese){
+#   residui <- resid(lm(d2~d1))
+#   plot (d2, residui, main = paste("Diagramma dei residui",paese,sep=" - "),
+#            xlab = "VSL" , ylab ="Residui " , pch =9 , col =" red " )
+#   abline ( h =0 , col =" blue " , lty =2)
+# }
+
+
+hierarchClustering <- function(hls, n_clust, data, metodo, trHI, variabile) {
+  taglio_hls <- cutree(hls, k = n_clust, h = NULL)
+  
+  table_hls <- table(taglio_hls)
+  taglio_list_hls <- list(taglio_hls)
+  
+  # Calcolo misure di non omogeneità statistiche
+  agvar_hls <- aggregate(data, taglio_list_hls, var)[, -1]
+  
+  trH_values <- numeric(n_clust)
+  for(i in 1:n_clust) {
+    trH_values[i] <- (table_hls[[i]] - 1) * sum(agvar_hls[i, ])
+    if(is.na(trH_values[i])) trH_values[i] <- 0
+  }
+  
+  trH_within <- sum(trH_values)
+  trH_between <- trHI - trH_within
+  
+  
+  plot(hls, hang=-1, xlab=paste(variabile,"- Metodo gerarchico agglomerativo"), sub=metodo)
+  axis(side=4, at=round(c(0, hls$height), 2))
+  
+  rect.hclust(hls, k=n_clust, border=rainbow(n_clust))
+  
+  return(list(trH_within = trH_within, trH_between = trH_between))
+}
+
+
+
+kMeansClustering <- function(data, n_clust, n_start = 5, iter_max, variabile) {
+  km <- kmeans(data, centers = n_clust, nstart = n_start, iter.max = iter_max)
+  
+  # Calcola misure di non omogeneità
+  trH_within <- sum(km$withinss)
+  trH_between <- km$betweenss
+  
+  plot(data, col = km$cluster, xlab = variabile, ylab = variabile)
+  points(km$centers, col = 1:n_clust, pch = 8, cex = 2)
+  
+  return(list(trH_within = trH_within, trH_between = trH_between, clusters = km$cluster))
 }
