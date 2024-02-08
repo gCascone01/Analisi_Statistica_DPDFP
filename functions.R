@@ -236,3 +236,19 @@ kMeansClustering <- function(data, n_clust, n_start = 5, iter_max, variabile) {
   
   return(list(trH_within = trH_within, trH_between = trH_between, clusters = km$cluster))
 }
+
+function0 = function(){
+  curve ( dnorm (x , mean =0 , sd =1) , from = -3 , to =3 , axes = FALSE , ylim =c (0 ,0.5)
+          , xlab =" " ,ylab = "" , main = " Densita ’ normale standard " )
+  text (0 ,0.05 , expression (1 - alpha ) )
+  text (0 ,0.2 , " Regione di \ naccettazione " )
+  axis (1 , c ( -3 , -1 ,0 ,1 ,3) ,c(" " , expression (-z [ alpha ]) ," " ," " ,"") )
+  vals <- seq ( -3 , -1 , length =100)
+  x <-c ( -3 , vals , -1 , -3)
+  y <-c (0 , dnorm ( vals ) ,0 ,0)
+  polygon (x ,y , density =20 , angle =45)
+  abline ( h =0)
+  text ( -1.5 ,0.05 , expression ( alpha ))
+  text ( -2.2 ,0.1 , " Regione di \ nrifiuto ")
+  box ()
+}
