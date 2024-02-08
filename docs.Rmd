@@ -19,13 +19,13 @@ library(ggplot2)
 
 #---- DEFINIZIONE DEI PATH ----
 
-# pathGitProject_Gio = "C:/Users/user/Desktop/Magistrale/Statistica e Analisi dei Dati/SAD_Project"
-# setwd(pathGitProject_Gio)
-# source("Functions.R")
-
-pathGitProject_Ciro = "C:/Users/UTENTE/git/SAD_Project"
-setwd(pathGitProject_Ciro)
+pathGitProject_Gio = "C:/Users/user/Desktop/Magistrale/Statistica e Analisi dei Dati/SAD_Project"
+setwd(pathGitProject_Gio)
 source("Functions.R")
+
+# pathGitProject_Ciro = "C:/Users/UTENTE/git/SAD_Project"
+# setwd(pathGitProject_Ciro)
+# source("Functions.R")
 
 #---- CARICO I DATASET ----
 
@@ -1033,7 +1033,8 @@ In sintesi, sulla base di questo test, i dati delle rilevazioni di DPM per l'Ita
 # # Visualizzare i risultati
 # print(results)
 
-D_Italia <- D_dataset["Italia",]
+D_Italia <- as.vector(D_dataset["Italia",])
+n_Italia = length(D_Italia)
 
 mean_Italia <- mean(D_Italia)
 
@@ -1054,7 +1055,7 @@ for(i in 2:4) {
 }
 nint[5] <- length ( which ( D_Italia >= a [4]) )
 
-chi2 <- sum ((( nint - n* 0.2) / sqrt ( n* 0.2) ) ^2)
+chi2 <- sum ((( nint - n_Italia* 0.2) / sqrt ( n_Italia* 0.2) ) ^2)
 
 # r num di elementi per ogni intervallo di frequenze (per ogni cella)
 r <-5
@@ -1066,6 +1067,169 @@ alpha <- 0.05
 qchisq ( alpha /2, df =r -k -1)
 
 qchisq ( 1-alpha /2, df =r -k -1)
+
+# Avendo denotato che la distribuzione è normale, possiamo eseguire i seguenti passi trattando la popolazione come normale
+
+# --- STIMA PUNTUALE ---
+
+# VALORE STIMATO PER IL PARAMETRO µ
+stimamu <- mean ( D_Italia )
+stimamu
+
+# VALORE STIMATO PER IL PARAMETRO σ^2
+stimasigma2 <-( length ( D_Italia ) -1) * var ( D_Italia )/ length ( D_Italia )
+stimasigma2
+
+# --- INTERVALLI DI CONFIDENZA ---
+
+alpha = 0.05
+
+# µ con σ^2 NOTA
+
+qnorm = qnorm (1 - alpha / 2)
+qnorm
+
+mean(D_Italia) - qnorm * sd_Italia/sqrt(n_Italia)
+mean(D_Italia) + qnorm * sd_Italia/sqrt(n_Italia)
+
+# µ con σ^2 NON NOTA
+
+qt = qt (1 - alpha /2, df =n_Italia -1)
+qt
+
+mean_Italia - qt * sd_Italia / sqrt(n_Italia)
+mean_Italia + qt * sd_Italia / sqrt(n_Italia)
+
+# σ^2 con µ NOTA
+
+# Supponiamo mu = 151 (in quanto la media è 151.x)
+
+mu = 151
+
+q1 = qchisq (alpha/2, df=n_Italia)
+q2 = qchisq(1-alpha/2, df=n_Italia)
+q1
+q2
+
+((n_Italia-1)*var(D_Italia) + n_Italia*(mean_Italia-mu)**2)/q2
+((n_Italia-1)*var(D_Italia) + n_Italia*(mean_Italia-mu)**2)/q1
+
+# σ^2 con µ NON NOTA
+
+q1 = qchisq ( alpha / 2, df =n_Italia -1)
+q2 = qchisq ( 1- alpha / 2, df =n_Italia -1)
+
+(n_Italia-1)*var(D_Italia)/q2
+(n_Italia-1)*var(D_Italia)/q1
+
+# --- CONFRONTO TRA DUE POPOLAZIONI (NORMALI) ---
+
+# Verifichiamo che la seconda popolazione sia normale con il test del chiquadro
+
+D_Italia_post_2005 <- as.vector(D_dataset["Italia",-(1:9)])
+n_Italia_post_2005 = length(D_Italia_post_2005)
+
+mean_Italia_post_2005 <- mean(D_Italia_post_2005)
+
+sd_Italia_post_2005 <- sd(D_Italia_post_2005)
+
+a <- numeric(4)
+
+for(i in 1:4){
+  a[i] <- qnorm(0.2*i, mean=mean_Italia_post_2005, sd=sd_Italia_post_2005)
+}
+
+r <- 5
+
+nint <- numeric(r)
+nint [1] <- length(which(D_Italia_post_2005 < a [1]) )
+for(i in 2:4) {
+  nint[i] <- length(which((D_Italia_post_2005 >= a[i-1]) & D_Italia_post_2005 < a[i]))
+}
+nint[5] <- length ( which ( D_Italia_post_2005 >= a [4]) )
+
+chi2 <- sum ((( nint - n_Italia_post_2005* 0.2) / sqrt ( n_Italia_post_2005* 0.2) ) ^2)
+chi2
+
+# r num di elementi per ogni intervallo di frequenze (per ogni cella)
+r <-5
+# k num di parametri non noti
+k <-2
+# r - k -1 gradi di libertà
+alpha <- 0.05
+
+qchisq ( alpha /2, df =r -k -1)
+
+qchisq ( 1-alpha /2, df =r -k -1)
+
+# chi2 compreso --> ipotesi valida --> popolazione normale. Possiamo procedere col confronto
+
+# --- CONFRONTO ---
+
+# µ1 − µ2 con σ^2(1) e σ^2(2) note
+
+qnorm(1-alpha/2, mean = 0, sd = 1)
+
+n_Italia
+n_Italia_post_2005
+
+mean_Italia
+mean_Italia_post_2005
+
+sd_Italia
+
+mean_Italia - mean_Italia_post_2005 - qnorm(1-alpha/2, mean = 0, sd = 1) * sqrt(sd_Italia^2/n_Italia + sd_Italia^2/n_Italia_post_2005)
+mean_Italia - mean_Italia_post_2005 + qnorm(1-alpha/2, mean = 0, sd = 1) * sqrt(sd_Italia^2/n_Italia + sd_Italia^2/n_Italia_post_2005)
+
+# Intervalli positivi -> indicano che il numero di morti è sicuramente superiore nel primo campione (tutti gli anni)
+# con un grado di fiducia del 95%
+
+# --- VERIFICA DELLE IPOTESI ---
+
+
+mean_Italia_post_2005
+
+D_Italia_pre_2005 <- as.vector(D_dataset["Italia",(1:9)])
+mean_Italia_pre_2005 <- mean(D_Italia_pre_2005)
+mean_Italia_pre_2005
+
+# ??
+# Sapendo che l'Italia ha una media di 151 morti, vogliamo mostrare come dal 2005 in poi la media cali.
+# Poniamo quindi mu = media_totale = 151 >= mu0 = media_post_2005 = 140
+# ??
+
+# Nel 2005 Giovanni emana una legge antifumo anche se lui fuma come un Turco.
+# Giovanni assicura al popolo italiano che grazie a questa legge i morti per il fumo passivo saranno minori di 168 (basandosi sul numero di morti precedenti nella media precedente al 2005 (potremmo usare il pre) con una sd di 15 morti)
+# L'UE che odia Giovanni e l'Italia vuole verificare se Giovanni dice il vero e non baggianate.
+# Quindi negli anni successivi controlla il numero di morti e ottiene un campione dal 2005 al 2018.
+# La media ottenuta è salvata in mean_italia_post_2005
+# Le variabili saranno:
+# mu0 <- 168(valore numerico ipotizzato, valore preso da mean_italia_pre_2005)
+# sigma <- 15 (valore numero ipotizzato valore preso da sd_italia)
+# n = n_Italia_post_2005
+# meancamp = mean_italia_post_2005
+
+# Test unilaterale destro
+# H0: mu >= mu_post / H1: mu < mu_post
+
+alpha = 0.05
+mu0 <-  168
+sigma = 15
+qnorm ( alpha , mean =0 , sd =1)
+n = n_Italia_post_2005
+
+meancamp = mean_Italia_post_2005
+
+( meancamp - mu0 ) /( sigma / sqrt (n) )
+
+# Stima statistica del test considerato
+ stima = ( meancamp - mu0 ) /( sigma / sqrt (n) )
+ stima
+
+pvalue <- pnorm ( stima , mean =0 , sd =1)
+pvalue
+
+function0()
 
 
 ```
