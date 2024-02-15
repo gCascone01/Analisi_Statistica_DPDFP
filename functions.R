@@ -68,7 +68,7 @@ f_timeSeries = function(data,tipo){
   ts = ts(df,start=1995, frequency=1)
   par(mar=c(5,4,4,15),xpd=TRUE)
   plot.ts(ts, plot.type = "single", col = colori, xlab="", ylab=tipo,
-          main=paste(tipo, " Serie Storica: 1995-2015"), type="l", bty="l")
+          main=paste(tipo, " Serie Storica: 1995-2018"), type="l", bty="l")
   grid()
   legend("topright",inset=c(-0.38,0),c(countries[1:14]), pch=c(20,20),col=colori[1:15])
   legend("topright",inset=c(-0.83,0),c(countries[15:nrow(data)]), pch=c(20,20),col=colori[15:27])
@@ -85,7 +85,7 @@ f_barre_sovrapp_per_eta = function(country, data_15, dataComp, data64, tipo){
   ggplot(df, aes(fill=classi, y=values, x=anni)) + 
     geom_bar(position="dodge", stat="identity", width=0.8,
              alpha=0.7, colour="black") + 
-    ggtitle(paste(tipo," per Classi di Età (1995 - 2015) - ",country, sep="")) + 
+    ggtitle(paste(tipo," per Classi di Età (1995 - 2018) - ",country, sep="")) + 
     theme(panel.background = element_blank(), axis.line = element_line(colour = "black"))
 }
 
