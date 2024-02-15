@@ -9,17 +9,15 @@ output:
   pdf_document: default
 ---
 
+# Caricamento Dataset e Preparazione
+
 ```{r setup, include=FALSE}
-# install.packages('readxl')
 library(readxl)
-# install.packages("ggplot2")
 library(ggplot2)
-# install.packages("gridExtra")
-# library(gridExtra)
 
 #---- DEFINIZIONE DEI PATH ----
 
-pathGitProject_Gio = "C:/Users/user/Desktop/Magistrale/Statistica e Analisi dei Dati/SAD_Project"
+pathGitProject_Gio = "C:/Users/user/Desktop/Magistrale/Statistica e Analisi dei Dati/SAD_PROJECT/SAD_Project"
 setwd(pathGitProject_Gio)
 source("Functions.R")
 
@@ -27,12 +25,17 @@ source("Functions.R")
 # setwd(pathGitProject_Ciro)
 # source("Functions.R")
 
-#---- CARICO I DATASET ----
+#---- CARICAMENTO DEI DATASET ----
 
 n_countries = 27
 
 mydata = read_xlsx('./Datasets/European-Country/Complete_Dataset.xlsx', 1)
 data = as.matrix(mydata)
+
+mydpm2019 = read_xlsx('./Datasets/European-Country/Complete_Dataset.xlsx', 1)
+dpm2019 = as.matrix(mydpm2019)
+myvsl2019 = read_xlsx('./Datasets/European-Country/Complete_Dataset.xlsx', 1)
+vsl2019 = as.matrix(myvsl2019)
 
 mydata15 = read_xlsx('./Datasets/European-Country/less15.xlsx', 1)
 data15 = as.matrix(mydata15)
@@ -43,9 +46,12 @@ dataComp = as.matrix(mydataComp)
 mydata64 = read_xlsx('./Datasets/European-Country/64.xlsx', 1)
 data64 = as.matrix(mydata64)
 
-#---- DATASET to MATRICI ----
+#---- PREPARAZIONE DATASET ----
 
 dataset = matrix( as.double(matrix(data[,-1],nrow=n_countries)) , nrow=n_countries)
+
+ds_dpm2019 = matrix( as.double(matrix(dpm2019[,-1],nrow=n_countries)) , nrow=n_countries)
+ds_vsl2019 = matrix( as.double(matrix(vsl2019[,-1],nrow=n_countries)) , nrow=n_countries)
 
 dataset15 = matrix( as.double(matrix(data15[,-1],nrow=n_countries)) , nrow=n_countries)
 
@@ -53,9 +59,8 @@ datasetComp = matrix( as.double(matrix(dataComp[,-1],nrow=n_countries)) , nrow=n
 
 dataset64 = matrix( as.double(matrix(data64[,-1],nrow=n_countries)) , nrow=n_countries)
 
-#---- PREPARAZIONE dataset ----
-
-#Rimozione anni che non analizziamo
+ds_dpm2019 = ds_dpm2019[,-c(1:48,50)]
+ds_vsl2019 = ds_vsl2019[,-c(1:49)]
 
 dataset=dataset[,-c(1:10,49:50)]
 
@@ -65,18 +70,20 @@ datasetComp=datasetComp[,-c(1:10,49:50)]
 
 dataset64=dataset64[,-c(1:10,49:50)]
 
-#Definizione nomi righe con nomi nazioni
+# Definizione labels Nazioni (righe)
 
 countries = c("Austria", "Belgio", "Bulgaria", "Cipro", "Croazia", "Danimarca", "Estonia", "Finlandia", "Francia", "Germania", "Grecia", "Ungheria", "Irlanda", "Italia", "Lettonia", "Lituania", "Lussemburgo", "Malta", "Paesi Bassi", "Polonia", "Portogallo", "Rep. Ceca", "Romania", "Slovacchia", "Slovenia", "Spagna", "Svezia")
 rownames(dataset) = countries
 rownames(dataset15) = countries
 rownames(datasetComp) = countries
 rownames(dataset64) = countries
+rownames(ds_dpm2019) = countries
+rownames(ds_vsl2019) = countries
 
-# Variabili (DPM (D) e VSL (D)) in DATASET SEPARATI
+# Suddivisione dei valori per DPM (D) e VSL (V) in dataset separati
 
-D_Index = seq(1,48, by=2) # DEFINISCO GLI INDICI DELLE COLONNE PER OGNI VARIABILE
-V_Index = seq(2,49, by=2) # D sta per Death, V per Value
+D_Index = seq(1,48, by=2) 
+V_Index = seq(2,49, by=2)
 
 D_dataset = dataset[, D_Index]
 V_dataset = dataset[, V_Index]
@@ -104,16 +111,11 @@ colnames(D_dataset64) = years
 colnames(V_dataset64) = years
 ```
 
-# Caricamento Librerie
+# Statistica Descrittiva Univariata
 
-Librerie utilizzate: readxl, ggplot2.
+## Indici di Centralità
 
-# Caricamento Dataset e Preparazione
-
-Caricamento dei dataset contenenti le variabili DPM e VSL per `r n_countries` paesi, suddivisi in fasce di età (minori di 15 anni, compresi tra 15 e 64 anni, maggiori di 64 anni). Preparazione dei dati: rimozione e formattazione righe e colonne, separazione delle variabili in dataset distinti.
-
-# Statistica Descrittiva
-
+### Indici di Centralità per DPM
 ```{r indici di centralità, echo=FALSE}
 #---- CALCOLO INDICI CENTRALITÀ ----
 
@@ -127,7 +129,6 @@ V_min15 = min(V_dataset15)
 V_minComp = min(V_datasetComp)
 V_min64 = min(V_dataset64)
 
-
 D_max = max(D_dataset)
 D_max15 = max(D_dataset15)
 D_maxComp = max(D_datasetComp)
@@ -138,18 +139,15 @@ V_max15 = max(V_dataset15)
 V_maxComp = max(V_datasetComp)
 V_max64 = max(V_dataset64)
 
-
 D_mean = mean(D_dataset)
 D_mean15 = mean(D_dataset15)
 D_meanComp = mean(D_datasetComp)
 D_mean64 = mean(D_dataset64)
 
-# Media aritmetica
 V_mean = mean(V_dataset)
 V_mean15 = mean(V_dataset15)
 V_meanComp = mean(V_datasetComp)
 V_mean64 = mean(V_dataset64)
-
 
 D_median = median(D_dataset)
 D_median15 = median(D_dataset15)
@@ -161,8 +159,6 @@ V_median15 = median(V_dataset15)
 V_medianComp = median(V_datasetComp)
 V_median64 = median(V_dataset64)
 
-
-
 D_indiciCentr = rbind(c(D_min,D_max,D_mean,D_median),c(D_min15,D_max15,D_mean15,D_median15),c(D_minComp,D_maxComp,D_meanComp,D_medianComp),c(D_min64,D_max64,D_mean64,D_median64))
 colnames(D_indiciCentr) = c("MIN", "MAX", "MEDIA", "MEDIANA")
 rownames(D_indiciCentr) = c("ALL","LESS 15","COMP 15 - 64","GREATER 64")
@@ -171,11 +167,7 @@ V_indiciCentr = rbind(c(V_min,V_max,V_mean,V_median),c(V_min15,V_max15,V_mean15,
 colnames(V_indiciCentr) = c("MIN", "MAX", "MEDIA", "MEDIANA")
 rownames(V_indiciCentr) = c("ALL","LESS 15","COMP 15 - 64","GREATER 64")
 ```
-## Calcolo indici di Centralità (per dataset)
 
-Di seguito il calcolo degli indici di centralità per i dataset suddivisi per eta e per variabili.
-
-### Indici di Centralità per DPM
 
 ```{r view DPM indici di centralità, echo=FALSE}
 D_indiciCentr
@@ -187,22 +179,22 @@ D_indiciCentr
 V_indiciCentr
 ```
 
+## Indici di Dispersione
 ```{r indici di dispersione, echo=FALSE}
 #---- CALCOLO INDICI DISPERSIONE ----
 
-# Campo di Variazione
+D_cdv = cv(D_dataset)
+D_cdv
+D_cdv15 = cv(D_dataset15)
+D_cdv15
+D_cdvComp = cv(D_datasetComp)
+D_cdvComp
+D_cdv64 = cv(D_dataset64)
+D_cdv64
 
-D_cdv = D_max - D_min
-D_cdv15 = D_max15 - D_min15
-D_cdvComp = D_maxComp - D_minComp
-D_cdv64 = D_max64 - D_min64
+V_cdv = cv(V_dataset)
+V_cdv
 
-V_cdv = V_max - V_min
-V_cdv15 = V_max15 - V_min15
-V_cdvComp = V_maxComp - V_minComp
-V_cdv64 = V_max64 - V_min64
-
-# Differenza interquartilica: meno sensibile a val estremi
 D_diffInterq = unname(quantile(sort(D_dataset), probs = 0.75)) - unname(quantile(sort(D_dataset), probs = 0.25))
 D_diffInterq15 = unname(quantile(sort(D_dataset15), probs = 0.75)) - unname(quantile(sort(D_dataset15), probs = 0.25))
 D_diffInterqComp = unname(quantile(sort(D_datasetComp), probs = 0.75)) - unname(quantile(sort(D_datasetComp), probs = 0.25))
@@ -213,7 +205,6 @@ V_diffInterq15 = unname(quantile(sort(V_dataset15), probs = 0.75)) - unname(quan
 V_diffInterqComp = unname(quantile(sort(V_datasetComp), probs = 0.75)) - unname(quantile(sort(V_datasetComp), probs = 0.25))
 V_diffInterq64 = unname(quantile(sort(V_dataset64), probs = 0.75)) - unname(quantile(sort(V_dataset64), probs = 0.25))
 
-# Varianza
 D_var = var(as.vector(D_dataset))
 D_var15 = var(as.vector(D_dataset15))
 D_varComp = var(as.vector(D_datasetComp))
@@ -224,11 +215,6 @@ V_var15 = var(as.vector(V_dataset15))
 V_varComp = var(as.vector(V_datasetComp))
 V_var64 = var(as.vector(V_dataset64))
 
-# Varianza per colonne (Forse ha più senso farlo per righe, ragioniamoci bene) Cosa fare ?????
-# D_var_col = apply(D_dataset, 2, var)
-# V_var_col = apply(D_dataset, 2, var)
-
-# Deviazione Standard totale: valore differisce dalla media aritmetica dei valori, in media quadratica di: x
 D_sd = sd(D_dataset)
 D_sd15 = sd(D_dataset15)
 D_sdComp = sd(D_datasetComp)
@@ -239,20 +225,14 @@ V_sd15 = sd(V_dataset15)
 V_sdComp = sd(V_datasetComp)
 V_sd64 = sd(V_dataset64)
 
-
 D_indiciDisp = rbind(c(D_cdv,D_diffInterq,D_var,D_sd),c(D_cdv15,D_diffInterq15,D_var15,D_sd15),c(D_cdvComp,D_diffInterqComp,D_varComp,D_sdComp),c(D_cdv64,D_diffInterq64,D_var64,D_sd64))
 colnames(D_indiciDisp) = c("CdV", "DIFF. INTERQ.", "VARIANZA", "DEVIAZ. STD")
 rownames(D_indiciDisp) = c("ALL","LESS 15","COMP 15 - 64","GREATER 64")
 
-V_indiciDisp = rbind(c(V_cdv,V_diffInterq,V_var,V_sd),c(V_cdv15,V_diffInterq15,V_var15,V_sd15),c(V_cdvComp,V_diffInterqComp,V_varComp,V_sdComp),c(V_cdv64,V_diffInterq64,V_var64,V_sd64))
+V_indiciDisp = rbind(c(V_cdv,V_diffInterq,V_var,V_sd))
 colnames(V_indiciDisp) = c("CdV", "DIFF. INTERQ.", "VARIANZA", "DEVIAZ. STD")
-rownames(V_indiciDisp) = c("ALL","LESS 15","COMP 15 - 64","GREATER 64")
+rownames(V_indiciDisp) = c("ALL")
 ```
-
-## Calcolo indici di Dispersione (per dataset)
-
-Di seguito il calcolo degli indici di dispersione per i dataset suddivisi per eta e per variabili.
-
 ### Indici di Dispersione per DPM
 
 ```{r view DPM indici di dispersione, echo=FALSE}
@@ -266,16 +246,18 @@ V_indiciDisp
 ```
 
 
-## Quantili (per dataset)
+## Quantili
 
 ```{r quantili, echo=FALSE}
-par(mfrow=c(1, 2))
+par(mfrow=c(2, 3))
 
 f_quantili(1,D_dataset, "DPM - ALL")
 f_quantili(6,D_dataset, "DPM - ALL")
 f_quantili(11,D_dataset, "DPM - ALL")
 f_quantili(16,D_dataset, "DPM - ALL")
 f_quantili(21,D_dataset, "DPM - ALL")
+par(mfrow=c(1, 1))
+par(mfrow=c(2, 3))
 
 f_quantili(1,D_dataset15, "DPM - LESS 15")
 f_quantili(6,D_dataset15, "DPM - LESS 15")
@@ -283,16 +265,26 @@ f_quantili(11,D_dataset15, "DPM - LESS 15")
 f_quantili(16,D_dataset15, "DPM - LESS 15")
 f_quantili(21,D_dataset15, "DPM - LESS 15")
 
+par(mfrow=c(1, 1))
+par(mfrow=c(2, 3))
+
 f_quantili(1,D_datasetComp, "DPM - COMP 15 - 64")
 f_quantili(6,D_datasetComp, "DPM - COMP 15 - 64")
+f_quantili(11,D_datasetComp, "DPM - COMP 15 - 64")
 f_quantili(16,D_datasetComp, "DPM - COMP 15 - 64")
 f_quantili(21,D_datasetComp, "DPM - COMP 15 - 64")
+
+par(mfrow=c(1, 1))
+par(mfrow=c(2, 3))
 
 f_quantili(1,D_dataset64, "DPM - GREATER 64")
 f_quantili(6,D_dataset64, "DPM - GREATER 64")
 f_quantili(11,D_dataset64, "DPM - GREATER 64")
 f_quantili(16,D_dataset64, "DPM - GREATER 64")
 f_quantili(21,D_dataset64, "DPM - GREATER 64")
+
+par(mfrow=c(1, 1))
+par(mfrow=c(2, 3))
 
 f_quantili(1,V_dataset, "VSL - ALL")
 f_quantili(6,V_dataset, "VSL - ALL")
@@ -301,10 +293,13 @@ f_quantili(16,V_dataset, "VSL - ALL")
 f_quantili(21,V_dataset, "VSL - ALL")
 
 par(mfrow=c(1, 1))
+par(mfrow=c(2, 3))
+
+par(mfrow=c(1, 1))
 ```
 
 
-## Funzione di Distribuzione Empirica (per country)
+## Funzione di Distribuzione Empirica
 
 ```{r FdDC, echo=FALSE}
 #---- FdDC - Funzione di Distribuzione Empirica Continua ----
@@ -320,8 +315,6 @@ par(mfrow=c(1, 1))
 ```
 
 ## Serie Temporali
-La legenda è attualmente nascosta perchè non riesco a metterla a lato per via dei margini di R MARKDOWN !!!
-
 ```{r serie temporali, echo=FALSE}
 f_timeSeries(D_dataset, "DPM ALL")
 f_timeSeries(V_dataset, "VSL ALL")
@@ -331,72 +324,21 @@ f_timeSeries(D_datasetComp, "DPM COMP 15 - 64")
 f_timeSeries(D_dataset64, "DPM GREATER 64")
 ```
 
-### Grafico a Barre Sovrapposte per DPM (per country)
+## Grafico a Barre Sovrapposte
 
 ```{r grafico a barre sovrapposte DPM, echo=FALSE}
 
-#par(mfrow=c(2,2))
+par(mfrow=c(2,2))
 
 #---- GRAFICO A BARRE SOVRAPPOSTE ----
 for(country in countries){
   print(f_barre_sovrapp_per_eta(country,D_dataset15,D_datasetComp,D_dataset64,"DPM"))
 }
 
-#par(mfrow=c(1, 1))
+par(mfrow=c(1, 1))
 ```
+# Statistica Descrittiva Bivariata
 ## Regressione
-
-### Grafici di regressione
-
-<!-- capire se ci sono schemi nei grafici dei residui: -->
-
-<!-- - LINEARE: NO -->
-
-<!-- PREVISIONE DATI FUTURI??????? -->
-
-<!-- ```{r grafii di regressione lineare, echo=FALSE} -->
-
-<!-- #---- GRAFICI DI REGRESSIONE LINEARE ---- -->
-
-<!-- # La regressione lineare è stata utilizzata per le variabili che presentano un coeff di correlazione < -0.85 e > 0.85 e per i modelli per cui risulta un coeff di determinazione > 0.7 -->
-
-<!-- regression_linear_c_cor_res = numeric() -->
-<!-- regression_linear_r_squared_res = numeric() -->
-<!-- regression_linear_resid_res = numeric() -->
-<!-- regression_non_linear_country = character() -->
-
-<!-- regression_linear_country = character() -->
-<!-- par(mfrow=c(1, 2)) -->
-<!-- for(country in countries) { -->
-<!--   results <- f_regressione_lineare(V_dataset[country,], D_dataset[country,], country, 0.7) -->
-
-<!--   if(!is.null(results)) { -->
-<!--     if(is.character(results)) { -->
-<!--       regression_non_linear_country <- c(regression_non_linear_country, results) -->
-<!--     } else { -->
-<!--       regression_linear_country <- c(regression_linear_country, country) -->
-
-<!--       regression_linear_c_cor_res <- c(regression_linear_c_cor_res, results[["c_cor"]]) -->
-<!--       regression_linear_r_squared_res <- c(regression_linear_r_squared_res, results[["r_squared"]]) -->
-
-<!--       regression_linear_resid_res <- c(regression_linear_resid_res, sum(results[["resid"]]^2)) -->
-<!--     } -->
-<!--   } -->
-<!-- } -->
-<!-- par(mfrow=c(1, 1)) -->
-
-
-<!-- res_reg_lin <- data.frame( -->
-<!--   cor = regression_linear_c_cor_res,  -->
-<!--   r_squared = regression_linear_r_squared_res,  -->
-<!--   resid = regression_linear_resid_res -->
-<!-- ) -->
-
-<!-- row.names(res_reg_lin) <- regression_linear_country -->
-
-<!-- res_reg_lin -->
-<!-- ``` -->
-
 ```{r grafici di regressione, echo=FALSE}
 
 #---- GRAFICI DI REGRESSIONE ----
@@ -430,65 +372,40 @@ res_reg_non_lin <- data.frame(
   resid = reg_non_lin_best_resid
 )
 
-# row.names(res_reg_non_lin) <- regression_non_linear_country
-
 summary_models
 ```
-## Clustering
-
+# Analisi dei Cluster
 ```{r clustering setup VSL, echo=FALSE}
-
-### DOMANDE
-
-# algoritmo di enumerazione completa?
-# scale anche se è una sola var?
-# elbow point?
-
-#---- SETUP ----
-
-# MATRICE DELLE DISTANZE
 
 V_distance <- dist(V_dataset, method="euclidean")
 
-# MATRICE DI NON OMOGENEITÀ TOTALE
-
+# Matrice di non omog. totale
 V_WI <- cov(V_dataset)
 
-# MATRICE STATISTICA DI NON OMOGENEITÀ TOTALE
-
+# Matrice statistica di non omog. totale
 V_n <- length(V_dataset)
 
 V_HI <- (V_n-1)*V_WI
 
-# TRACCIA DI HI
-
+# Traccia di HI
 V_trHI <- sum(diag(V_HI))
 
 ```
 
-### Metodi gerarchici VSL
+## Metodi gerarchici VSL
 
-#### Metodo del legame singolo
+### Metodo del legame singolo
 
 ```{r clustering metodi gerarchici - legame singolo VSL, echo=FALSE}
-
-#---- METODI GERARCHICI ----
-
-#---- METODO DEL LEGAME SINGOLO ----
-
 num_clusters <- 2:8
 hls <- hclust(V_distance, method="single")
 
 # Dendogramma
-  
 plot(hls, hang=-1, xlab=paste("VSL - Metodo gerarchico agglomerativo"), sub=paste("del legame singolo"))
 axis(side=4, at=round(c(0, hls$height), 2))
 
 # Screeplot
-
 plot(c(0, hls$height), seq(n_countries,1), type="b", main="Screeplot", xlab="Distanza di aggregazione", ylab="Numero di cluster", col="red")
-
-# Da 1 a 2 risulta il salto maggiore, quindi sembra esser il miglior, secondo questa procedura EMPIRICA, l'utilizzo di 2 cluster, c'è un ulteriore salto lungo anche da 2 a 3, quindi proveremo anche per 3, fino a 8.
 
 trH_within_values <- numeric(length(num_clusters))
 trH_between_values <- numeric(length(num_clusters))
@@ -503,34 +420,20 @@ for(i in num_clusters){
 
 plot(num_clusters, trH_within_values, type="b", xlab="Numero di Cluster", ylab="Non Omogeneità (trH_within)", main="Analisi del Numero Ottimale di Cluster")
 plot(num_clusters, trH_between_values, type="b", xlab="Numero di Cluster", ylab="Non Omogeneità (trH_between)", main="Analisi del Numero Ottimale di Cluster")
-
-
-# Sia graficamente, che analizzando le misure di non omogeneità between e within e guardando i grafici visualizzati precedentemente (quindi punto di gomito), il numero di cluster k=4 sembra il più adatto ai nostri dati
-
-
-
 ```
 
-#### Metodo del legame completo
+### Metodo del legame completo
 
 ```{r clustering metodi gerarchici - legame completo VSL, echo=FALSE}
-
-#---- METODI GERARCHICI ----
-
-#---- METODO DEL LEGAME COMPLETO ----
 num_clusters <- 2:8
 hls <- hclust(V_distance, method="complete")
 
 # Dendogramma
-  
 plot(hls, hang=-1, xlab=paste("VSL - Metodo gerarchico agglomerativo"), sub=paste("del legame completo"))
 axis(side=4, at=round(c(0, hls$height), 2))
 
 # Screeplot
-
 plot(c(0, hls$height), seq(n_countries,1), type="b", main="Screeplot", xlab="Distanza di aggregazione", ylab="Numero di cluster", col="red")
-
-# Da 1 a 2 risulta il salto maggiore, quindi sembra esser il miglior, secondo questa procedura EMPIRICA, l'utilizzo di 2 cluster, c'è un ulteriore salto lungo anche da 2 a 3, quindi proveremo anche per 3, fino a 8.
 
 trH_within_values <- numeric(length(num_clusters))
 trH_between_values <- numeric(length(num_clusters))
@@ -545,34 +448,20 @@ for(i in num_clusters){
 
 plot(num_clusters, trH_within_values, type="b", xlab="Numero di Cluster", ylab="Non Omogeneità (trH_within)", main="Analisi del Numero Ottimale di Cluster")
 plot(num_clusters, trH_between_values, type="b", xlab="Numero di Cluster", ylab="Non Omogeneità (trH_between)", main="Analisi del Numero Ottimale di Cluster")
-
-
-# Sia graficamente, che analizzando le misure di non omogeneità between e within e guardando i grafici visualizzati precedentemente (quindi punto di gomito), il numero di cluster k=4 sembra il più adatto ai nostri dati... Forse essendo il salto maggiore verso 3, questo metodo suggerisce k=4, ma non ne sono sicuro, son più confident di 4.
-
-
-
 ```
 
-#### Metodo del legame medio
+### Metodo del legame medio
 
 ```{r clustering metodi gerarchici - legame medio VSL, echo=FALSE}
-
-#---- METODI GERARCHICI ----
-
-#---- METODO DEL LEGAME MEDIO ----
 num_clusters <- 2:8
 hls <- hclust(V_distance, method="average")
 
 # Dendogramma
-  
 plot(hls, hang=-1, xlab=paste("VSL - Metodo gerarchico agglomerativo"), sub=paste("del legame medio"))
 axis(side=4, at=round(c(0, hls$height), 2))
 
 # Screeplot
-
 plot(c(0, hls$height), seq(n_countries,1), type="b", main="Screeplot", xlab="Distanza di aggregazione", ylab="Numero di cluster", col="red")
-
-# Da 1 a 2 risulta il salto maggiore, quindi sembra esser il miglior, secondo questa procedura EMPIRICA, l'utilizzo di 2 cluster, c'è un ulteriore salto lungo anche da 2 a 3, quindi proveremo anche per 3, fino a 8.
 
 trH_within_values <- numeric(length(num_clusters))
 trH_between_values <- numeric(length(num_clusters))
@@ -587,35 +476,21 @@ for(i in num_clusters){
 
 plot(num_clusters, trH_within_values, type="b", xlab="Numero di Cluster", ylab="Non Omogeneità (trH_within)", main="Analisi del Numero Ottimale di Cluster")
 plot(num_clusters, trH_between_values, type="b", xlab="Numero di Cluster", ylab="Non Omogeneità (trH_between)", main="Analisi del Numero Ottimale di Cluster")
-
-
-# Sia graficamente, che analizzando le misure di non omogeneità between e within e guardando i grafici visualizzati precedentemente (quindi punto di gomito), il numero di cluster k=4 sembra il più adatto ai nostri dati... Forse essendo il salto maggiore verso 3, questo metodo suggerisce k=4, ma non ne sono sicuro, son più confident di 4.
-
-
-
 ```
 
-#### Metodo del centroide
+### Metodo del centroide
 
 ```{r clustering metodi gerarchici - centroide VSL, echo=FALSE}
-
-#---- METODI GERARCHICI ----
-
-#---- METODO DEL CENTROIDE ----
 num_clusters <- 2:8
 V_distance2 <- V_distance^2
 hls <- hclust(V_distance2, method="centroid")
 
 # Dendogramma
-  
 plot(hls, hang=-1, xlab=paste("VSL - Metodo gerarchico agglomerativo"), sub=paste("del centroide"))
 axis(side=4, at=round(c(0, hls$height), 2))
 
 # Screeplot
-
 plot(c(0, hls$height), seq(n_countries,1), type="b", main="Screeplot", xlab="Distanza di aggregazione", ylab="Numero di cluster", col="red")
-
-# Da 1 a 2 risulta il salto maggiore, quindi sembra esser il miglior, secondo questa procedura EMPIRICA, l'utilizzo di 2 cluster, c'è un ulteriore salto lungo anche da 2 a 3, quindi proveremo anche per 3, fino a 8.
 
 trH_within_values <- numeric(length(num_clusters))
 trH_between_values <- numeric(length(num_clusters))
@@ -631,21 +506,13 @@ for(i in num_clusters){
 plot(num_clusters, trH_within_values, type="b", xlab="Numero di Cluster", ylab="Non Omogeneità (trH_within)", main="Analisi del Numero Ottimale di Cluster")
 plot(num_clusters, trH_between_values, type="b", xlab="Numero di Cluster", ylab="Non Omogeneità (trH_between)", main="Analisi del Numero Ottimale di Cluster")
 
-
-# Sia graficamente, che analizzando le misure di non omogeneità between e within e guardando i grafici visualizzati precedentemente (quindi punto di gomito), il numero di cluster k=4 sembra il più adatto ai nostri dati... Forse essendo il salto maggiore verso 3, questo metodo suggerisce k=4, ma non ne sono sicuro, son più confident di 4.
-
-
-
 ```
 
 
-#### Metodo della mediana
+### Metodo della mediana
 
 ```{r clustering metodi gerarchici - mediana VSL, echo=FALSE}
 
-#---- METODI GERARCHICI ----
-
-#---- METODO DELLA MEDIANA ----
 num_clusters <- 2:8
 V_distance2 <- V_distance^2
 hls <- hclust(V_distance2, method="median")
@@ -658,8 +525,6 @@ axis(side=4, at=round(c(0, hls$height), 2))
 # Screeplot
 
 plot(c(0, hls$height), seq(n_countries,1), type="b", main="Screeplot", xlab="Distanza di aggregazione", ylab="Numero di cluster", col="red")
-
-# Da 1 a 2 risulta il salto maggiore, quindi sembra esser il miglior, secondo questa procedura EMPIRICA, l'utilizzo di 2 cluster, c'è un ulteriore salto lungo anche da 2 a 3, quindi proveremo anche per 3, fino a 8.
 
 trH_within_values <- numeric(length(num_clusters))
 trH_between_values <- numeric(length(num_clusters))
@@ -675,22 +540,13 @@ for(i in num_clusters){
 plot(num_clusters, trH_within_values, type="b", xlab="Numero di Cluster", ylab="Non Omogeneità (trH_within)", main="Analisi del Numero Ottimale di Cluster")
 plot(num_clusters, trH_between_values, type="b", xlab="Numero di Cluster", ylab="Non Omogeneità (trH_between)", main="Analisi del Numero Ottimale di Cluster")
 
-
-# Sia graficamente, che analizzando le misure di non omogeneità between e within e guardando i grafici visualizzati precedentemente (quindi punto di gomito), il numero di cluster k=4 sembra il più adatto ai nostri dati... Forse essendo il salto maggiore verso 3, questo metodo suggerisce k=4, ma non ne sono sicuro, son più confident di 4.
-
-
-
 ```
 
-### Metodi non gerarchici VSL
+## Metodi non gerarchici VSL
 
-#### Metodo kmeans
+### Metodo kmeans
 
 ```{r clustering metodi non gerarchici - kmeans VSL, echo=FALSE}
-
-#---- METODI NON GERARCHICI ----
-
-#---- METODO KMEANS ----
 n_clust = 3:5
 for(i in n_clust){
   V_km <- kMeansClustering(V_dataset, i, 5, 10, "VSL")
@@ -701,46 +557,31 @@ for(i in n_clust){
   
   V_km_clusters <- V_km[["clusters"]]
 }
-
-
-
-# Sia graficamente, che analizzando le misure di non omogeneità between e within e guardando i grafici visualizzati precedentemente (quindi punto di gomito), il numero di cluster k=4 sembra il più adatto ai nostri dati... Forse essendo il salto maggiore verso 3, questo metodo suggerisce k=4, ma non ne sono sicuro, son più confident di 4.
-
-
-
 ```
-
+## Metodi gerarchici DPM
 ```{r clustering setup DPM, echo=FALSE}
 
-### DOMANDE
-
-# algoritmo di enumerazione completa?
-
-#---- SETUP ----
-
-# MATRICE DELLE DISTANZE
+# Matrice distanze
 
 D_distance <- dist(D_dataset, method="euclidean")
 
-# MATRICE DI NON OMOGENEITÀ TOTALE
+# Matrice di non omog. totale
 
 D_WI <- cov(D_dataset)
 
-# MATRICE STATISTICA DI NON OMOGENEITÀ TOTALE
+# Matrice statistica di non omog. totale
 
 D_n <- length(D_dataset)
 
 D_HI <- (D_n-1)*D_WI
 
-# TRACCIA DI HI
+# Traccia di HI
 
 D_trHI <- sum(diag(D_HI))
 
 ```
 
-### Metodi gerarchici DPM
-
-#### Metodo del legame singolo
+### Metodo del legame singolo
 
 ```{r clustering metodi gerarchici - legame singolo DPM, echo=FALSE}
 
@@ -776,14 +617,9 @@ for(i in num_clusters){
 plot(num_clusters, trH_within_values, type="b", xlab="Numero di Cluster", ylab="Non Omogeneità (trH_within)", main="Analisi del Numero Ottimale di Cluster")
 plot(num_clusters, trH_between_values, type="b", xlab="Numero di Cluster", ylab="Non Omogeneità (trH_between)", main="Analisi del Numero Ottimale di Cluster")
 
-
-#
-
-
-
 ```
 
-#### Metodo del legame completo
+### Metodo del legame completo
 
 ```{r clustering metodi gerarchici - legame completo DPM, echo=FALSE}
 
@@ -825,7 +661,7 @@ plot(num_clusters, trH_between_values, type="b", xlab="Numero di Cluster", ylab=
 
 ```
 
-#### Metodo del legame medio
+### Metodo del legame medio
 
 ```{r clustering metodi gerarchici - legame medio DPM, echo=FALSE}
 
@@ -867,7 +703,7 @@ plot(num_clusters, trH_between_values, type="b", xlab="Numero di Cluster", ylab=
 
 ```
 
-#### Metodo del centroide
+### Metodo del centroide
 
 ```{r clustering metodi gerarchici - centroide DPM, echo=FALSE}
 
@@ -910,7 +746,7 @@ plot(num_clusters, trH_between_values, type="b", xlab="Numero di Cluster", ylab=
 ```
 
 
-#### Metodo della mediana
+### Metodo della mediana
 
 ```{r clustering metodi gerarchici - mediana DPM, echo=FALSE}
 
@@ -952,16 +788,16 @@ plot(num_clusters, trH_between_values, type="b", xlab="Numero di Cluster", ylab=
 
 ```
 
-### Metodi non gerarchici DPM
+## Metodi non gerarchici DPM
 
-#### Metodo kmeans
+### Metodo kmeans
 
 ```{r clustering metodi non gerarchici - kmeans DPM, echo=FALSE}
 
 #---- METODI NON GERARCHICI ----
 
 #---- METODO KMEANS ----
-n_clust = 6:8
+n_clust = 4:6
 for(i in n_clust){
   D_km <- kMeansClustering(D_dataset, i, 5, 10, "DPM")
 
@@ -972,68 +808,16 @@ for(i in n_clust){
   D_km_clusters <- D_km[["clusters"]]
 }
 
-
-
-# n_clust = 4
-# D_km <- kMeansClustering(D_dataset, n_clust, 5, 10)
-# 
-# D_trH_km_within <- D_km[["trH_within"]]
-# 
-# D_trH_km_between <- D_km[["trH_between"]]
-# 
-# D_km_clusters <- D_km[["clusters"]]
-# 
-# 
-# n_clust = 5
-# D_km <- kMeansClustering(D_dataset, n_clust, 5, 10)
-# 
-# D_trH_km_within <- D_km[["trH_within"]]
-# 
-# D_trH_km_between <- D_km[["trH_between"]]
-# 
-# D_km_clusters <- D_km[["clusters"]]
-
-
-
-#
-
-
-
 ```
-## Parte finale
+# Inferenza Statistica
 
-### Chi2
+## Stima Puntuale
 
-Dato l'output:
-
-Il valore calcolato del test chi quadrato (chi2) è 4.75.
-Il quantile inferiore della distribuzione chi quadrato è 0.05063562.
-Il quantile superiore della distribuzione chi quadrato è 7.377759.
-
-Poiché il valore calcolato di 4.75 è compreso tra i due quantili (0.05063562 e 7.377759), non rifiutiamo l'ipotesi nulla. In altre parole, non abbiamo prove sufficienti per affermare che i dati non seguano la distribuzione normale specificata.
-
-In sintesi, sulla base di questo test, i dati delle rilevazioni di DPM per l'Italia non mostrano significative deviazioni dalla normalità, secondo il livello di significatività scelto (α = 0.05).
-```{r metodo chi quadrato, echo=FALSE}
-
-
-# results <- apply(D_dataset, 2, function(column) {
-#     # Definire le categorie (bins)
-#     bins <- seq(min(column), max(column), length.out = 10)
-#     
-#     # Calcolare le frequenze osservate
-#     observed <- hist(column, breaks = bins, plot = FALSE)$counts
-#     
-#     # Calcolare le frequenze attese
-#     expected <- dnorm(bins, mean = mean(column), sd = sd(column)) * length(column) * diff(bins[1:2])
-#     
-#     # Eseguire il test del chi quadrato
-#     chisq.test(x = observed, p = expected, rescale.p = TRUE)
-# })
-# 
-# # Visualizzare i risultati
-# print(results)
+```{r stima puntuale, echo=FALSE}
 
 D_Italia <- as.vector(D_dataset["Italia",])
+D_Italia = append(D_Italia,134.877)
+
 n_Italia = length(D_Italia)
 
 mean_Italia <- mean(D_Italia)
@@ -1068,7 +852,7 @@ qchisq ( alpha /2, df =r -k -1)
 
 qchisq ( 1-alpha /2, df =r -k -1)
 
-# Avendo denotato che la distribuzione è normale, possiamo eseguire i seguenti passi trattando la popolazione come normale
+# Distribuzione normale!
 
 # --- STIMA PUNTUALE ---
 
@@ -1079,6 +863,9 @@ stimamu
 # VALORE STIMATO PER IL PARAMETRO σ^2
 stimasigma2 <-( length ( D_Italia ) -1) * var ( D_Italia )/ length ( D_Italia )
 stimasigma2
+```
+## Intervalli di Confidenza
+```{r intervalli di confidenza, echo=FALSE}
 
 # --- INTERVALLI DI CONFIDENZA ---
 
@@ -1117,11 +904,14 @@ q2
 # σ^2 con µ NON NOTA
 
 q1 = qchisq ( alpha / 2, df =n_Italia -1)
-q2 = qchisq ( 1- alpha / 2, df =n_Italia -1)
+q2 = qchisq ( 1-alpha/2, df =n_Italia -1)
 
 (n_Italia-1)*var(D_Italia)/q2
 (n_Italia-1)*var(D_Italia)/q1
 
+```
+## Confronto tra Popolazioni
+```{r confronto tra popolazioni, echo=FALSE}
 # --- CONFRONTO TRA DUE POPOLAZIONI (NORMALI) ---
 
 # Verifichiamo che la seconda popolazione sia normale con il test del chiquadro
@@ -1184,6 +974,10 @@ mean_Italia - mean_Italia_post_2005 + qnorm(1-alpha/2, mean = 0, sd = 1) * sqrt(
 # Intervalli positivi -> indicano che il numero di morti è sicuramente superiore nel primo campione (tutti gli anni)
 # con un grado di fiducia del 95%
 
+```
+## Verifica delle Ipotesi
+```{r verifica delle ipotesi, echo=FALSE}
+
 # --- VERIFICA DELLE IPOTESI ---
 
 
@@ -1193,44 +987,34 @@ D_Italia_pre_2005 <- as.vector(D_dataset["Italia",(1:9)])
 mean_Italia_pre_2005 <- mean(D_Italia_pre_2005)
 mean_Italia_pre_2005
 
-# ??
-# Sapendo che l'Italia ha una media di 151 morti, vogliamo mostrare come dal 2005 in poi la media cali.
-# Poniamo quindi mu = media_totale = 151 >= mu0 = media_post_2005 = 140
-# ??
+# Vogliamo verificare che il numero di morti medio dal 2005 in poi sia < 167 con una deviazione standard di 10
+# Quindi ponendo H0 : mu >= mu0 e H1 : mu < mu0 , vogliamo verificare che sia verificata l'ipotesi H1.
+# Applichiamo quindi il TEST UNILATERALE DESTRO
 
-# Nel 2005 Giovanni emana una legge antifumo anche se lui fuma come un Turco.
-# Giovanni assicura al popolo italiano che grazie a questa legge i morti per il fumo passivo saranno minori di 168 (basandosi sul numero di morti precedenti nella media precedente al 2005 (potremmo usare il pre) con una sd di 15 morti)
-# L'UE che odia Giovanni e l'Italia vuole verificare se Giovanni dice il vero e non baggianate.
-# Quindi negli anni successivi controlla il numero di morti e ottiene un campione dal 2005 al 2018.
-# La media ottenuta è salvata in mean_italia_post_2005
-# Le variabili saranno:
-# mu0 <- 168(valore numerico ipotizzato, valore preso da mean_italia_pre_2005)
-# sigma <- 15 (valore numero ipotizzato valore preso da sd_italia)
-# n = n_Italia_post_2005
-# meancamp = mean_italia_post_2005
+alpha <- 0.05
+mu0 <- 167
+sigma <- 10
+n <- n_Italia_post_2005
+meancamp <- mean_Italia_post_2005
 
-# Test unilaterale destro
-# H0: mu >= mu_post / H1: mu < mu_post
+meno_z_a = qnorm ( alpha , mean =0 , sd =1)
+meno_z_a
 
-alpha = 0.05
-mu0 <-  168
-sigma = 15
-qnorm ( alpha , mean =0 , sd =1)
-n = n_Italia_post_2005
+z = ( meancamp - mu0 ) /( sigma / sqrt (n) )
+z
 
-meancamp = mean_Italia_post_2005
+z > meno_z_a
+# z > meno_z_a ? No, pertanto bisogna rifiutare l'ipotesi H0 e, di conseguenze, accettare l'ipotesi H1.
 
-( meancamp - mu0 ) /( sigma / sqrt (n) )
-
-# Stima statistica del test considerato
- stima = ( meancamp - mu0 ) /( sigma / sqrt (n) )
- stima
-
-pvalue <- pnorm ( stima , mean =0 , sd =1)
+# Per un'ulteriore sicurezza, verifichiamo anche con il test del p_value.
+pvalue <- pnorm ( z , mean =0 , sd =1)
 pvalue
 
-function0()
+pvalue > alpha
+# pvalue > alpha ? No, pertanto anche il test del pvalue consiglia di rifiutare l'ipotesi nulla H0, quindi accettare H1.
 
+# In questo modo, abbiamo verificato che la media di morti dal 2005 in poi
+# è minore di 168, valore che corrisponde alla media riportata negli anni precedenti al 2005.
 
 ```
 
