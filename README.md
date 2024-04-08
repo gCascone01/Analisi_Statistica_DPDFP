@@ -4,6 +4,10 @@
 Questo progetto è stato sviluppato per l'esame di Statistica e Analisi dei Dati (UNISA, Università degli Studi di Salerno). Lo scopo principale dello studio è indagare l'impatto degli investimenti sulla salute pubblica, con un focus particolare sui decessi prematuri attribuibili al fumo passivo nei paesi dell'Unione Europea. Attraverso l'uso di diverse metodologie analitiche, si mira a comprendere come le variazioni negli investimenti influenzano il numero di decessi, considerando anche l'impatto delle normative e degli eventi storici.
 
 ## Autori
+<a href="https://github.com/gCascone01/Analisi_Statistica_DPDFP/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=gCascone01/Analisi_Statistica_DPDFP" />
+</a>
+
 * [Cascone Giovanni](https://github.com/gCascone01)
 * [Vitale Ciro](https://github.com/cirovitale)
 
